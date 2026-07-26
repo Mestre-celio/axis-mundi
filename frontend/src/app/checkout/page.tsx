@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Card } from '@/components/ui/Card';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { formatBRL } from '@/lib/utils';
 import type { Order } from '@/types';
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const orderId = searchParams.get('order_id');
@@ -90,8 +90,7 @@ export default function CheckoutPage() {
               Aguardando confirmação do pagamento...
             </div>
             <p className="text-xs text-gray-600">
-              O pagamento PIX é confirmado em poucos segundos.
-              <br />A página será atualizada automaticamente.
+              O pagamento PIX é confirmado em poucos segundos.<br />A página será atualizada automaticamente.
             </p>
           </div>
         )}
@@ -118,9 +117,7 @@ export default function CheckoutPage() {
           </div>
           <div className="flex justify-between text-sm text-gray-500 mt-2">
             <span>Status</span>
-            <span className={`${
-              order.status === 'confirmed' ? 'text-green-400' : 'text-gold-400'
-            }`}>
+            <span className={order.status === 'confirmed' ? 'text-green-400' : 'text-gold-400'}>
               {order.status === 'confirmed' ? 'Confirmado' :
                order.status === 'processing' ? 'Processando' : 'Pendente'}
             </span>
@@ -134,5 +131,17 @@ export default function CheckoutPage() {
         </div>
       </Card>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }
