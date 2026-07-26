@@ -16,6 +16,7 @@ export const config = {
   asaas: {
     apiKey: process.env.ASAAS_API_KEY || '',
     env: process.env.ASAAS_ENV || 'sandbox',
+    webhookToken: process.env.ASAAS_WEBHOOK_TOKEN || '',
     get baseUrl() {
       return this.env === 'production'
         ? 'https://api.asaas.com/v3'

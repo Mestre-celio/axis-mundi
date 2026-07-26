@@ -16,6 +16,19 @@ process.on('unhandledRejection', (reason) => {
   console.error('UNHANDLED REJECTION:', reason);
 });
 
+const REQUIRED_ENV_VARS = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'JWT_SECRET'] as const;
+const missing = REQUIRED_ENV_VARS.filter((key) => !process.env[key]);
+if (missing.length > 0) {
+  console.error(`ERRO CRÍTICO: Variáveis de ambiente obrigatórias não configuradas: ${missing.join(', ')}`);
+  if (config.nodeEnv === 'production') process.exit(1);
+  console.warn('AVISO: Rodando em desenvolvimento sem variáveis críticas — alguns recursos podem falhar.');
+}
+
+if (config.nodeEnv === 'production' && config.jwt.secret === 'dev-secret-change-in-production') {
+  console.error('ERRO CRÍTICO: JWT_SECRET não foi alterado do valor padrão em produção!');
+  process.exit(1);
+}
+
 const app = express();
 
 app.use(helmet());

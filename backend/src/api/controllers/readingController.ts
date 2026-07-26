@@ -4,6 +4,7 @@ import { supabaseAdmin } from '../../lib/supabase';
 import { AppError } from '../../middleware/errorHandler';
 import { AuthenticatedRequest } from '../../middleware/auth';
 import { ResonanceEngine } from '../../core/resonanceEngine';
+import { AIService } from '../../services/ai';
 import { logger } from '../../lib/logger';
 
 const createReadingSchema = z.object({
@@ -66,6 +67,34 @@ export const readingController = {
         .single();
 
       if (error) throw new AppError(500, 'DB_ERROR', 'Erro ao criar leitura', error);
+
+      const aiService = new AIService();
+      const cardsForAI = drawn.map((c, i) => ({
+        name: c.name,
+        position: ['direita', 'invertida'][Math.floor(Math.random() * 2)],
+      }));
+      const aiResult = await aiService.generateInterpretation({
+        oracleName: body.oracle_slug,
+        cards: cardsForAI,
+        question: body.question,
+        tone: body.tone,
+        resonancePattern: resonanceData.pattern,
+      }).catch((err) => {
+        logger.error({ err, readingId: reading.id }, 'Falha ao gerar interpretação por IA');
+        return null;
+      });
+
+      if (aiResult) {
+        await supabaseAdmin
+          .from('readings')
+          .update({
+            ai_interpretation: aiResult.interpretation,
+            poetic_version: aiResult.poetic,
+          })
+          .eq('id', reading.id);
+        reading.ai_interpretation = aiResult.interpretation;
+        reading.poetic_version = aiResult.poetic;
+      }
 
       logger.info({ readingId: reading.id, userId }, 'Nova leitura criada');
 

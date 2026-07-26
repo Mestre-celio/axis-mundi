@@ -228,6 +228,47 @@ WHERE status = 'confirmed'
 GROUP BY DATE_TRUNC('month', paid_at)
 ORDER BY month DESC;
 
+-- 016 - Função calcular tom da leitura (oracular/poético/direto)
+CREATE OR REPLACE FUNCTION public.calculate_reading_tone(
+  p_resonance_data JSONB
+) RETURNS VARCHAR(20) AS $$
+DECLARE
+  v_avg_resonance DECIMAL;
+  v_tone VARCHAR(20);
+BEGIN
+  v_avg_resonance := (
+    SELECT COALESCE(AVG((value->>'coefficient')::DECIMAL), 0)
+    FROM jsonb_array_elements(p_resonance_data->'resonances')
+  );
+  v_tone := CASE
+    WHEN v_avg_resonance > 0.7 THEN 'oracular'
+    WHEN v_avg_resonance > 0.3 THEN 'poetico'
+    WHEN v_avg_resonance > -0.3 THEN 'pedagogico'
+    ELSE 'direto'
+  END;
+  RETURN v_tone;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+-- 017 - Verificar expiração de VIP
+CREATE OR REPLACE FUNCTION public.check_vip_expiry()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.vip_expires_at IS NOT NULL AND NEW.vip_expires_at < now() THEN
+    NEW.is_vip := false;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_vip_expiry_before_update ON public.profiles;
+CREATE OR REPLACE TRIGGER check_vip_expiry_before_update
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW EXECUTE FUNCTION public.check_vip_expiry();
+
+-- 018 - Índice faltante
+CREATE INDEX IF NOT EXISTS idx_documents_reading ON public.generated_documents(reading_id);
+
 -- =====================================================
 -- SEEDS
 -- =====================================================

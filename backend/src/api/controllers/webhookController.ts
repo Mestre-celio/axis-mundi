@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabaseAdmin } from '../../lib/supabase';
 import { logger } from '../../lib/logger';
+import { config } from '../../config';
 import { AsaasService } from '../../services/asaas';
 import { DossierGenerator } from '../../services/dossierGenerator';
 
@@ -15,6 +16,12 @@ const ASAAS_EVENT_MAP: Record<string, string> = {
 export const webhookController = {
   async handleAsaas(req: Request, res: Response, next: NextFunction) {
     try {
+      const token = req.headers['asaas-access-token'] as string;
+      if (config.asaas.webhookToken && token !== config.asaas.webhookToken) {
+        logger.warn({ ip: req.ip }, 'Tentativa de webhook com token inválido');
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+      }
+
       const { event, payment } = req.body;
 
       if (!event || !payment) {

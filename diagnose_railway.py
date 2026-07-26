@@ -1,11 +1,14 @@
-"""Diagnostico do Railway - Axis Mundi"""
+"""Diagnostico do Railway - Axis Mundi
+Uso: RAILWAY_TOKEN=xxx RAILWAY_PROJECT_ID=xxx python diagnose_railway.py
+"""
 import urllib.request
 import json
 import sys
+import os
 
-TOKEN = "a44f78e9-c1c8-4593-a43e-3fc59d66fe75"
-PROJECT_ID = "b84051c5-0d4c-4302-97f6-4cbbdf0555fc"
-BACKEND_URL = "https://backend-production-1890.up.railway.app"
+TOKEN = os.environ.get("RAILWAY_TOKEN") or "cole_seu_token_aqui"
+PROJECT_ID = os.environ.get("RAILWAY_PROJECT_ID") or "3203fc3a-c19a-47c6-b13f-935560ab2669"
+BACKEND_URL = "https://axis-mundi-production.up.railway.app"
 
 def graphql(query, variables=None):
     data = json.dumps({"query": query, "variables": variables or {}}).encode()
