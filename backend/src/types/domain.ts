@@ -1,5 +1,7 @@
 // === Domain Logic Types ===
 
+import { ResonanceData } from './database';
+
 export interface AstrologicalPosition {
   sun: CelestialBody;
   moon: CelestialBody;

@@ -103,7 +103,7 @@ export class DossierGenerator {
 
       doc.fontSize(42)
         .fillColor('#d4af37')
-        .text('AXIS MUNDI', { align: 'center' }, 120);
+        .text('AXIS MUNDI', 0, 120, { align: 'center' });
 
       doc.fontSize(14)
         .fillColor('#c0c0c0')
@@ -161,7 +161,6 @@ export class DossierGenerator {
           .text(params.reading.poetic_version, {
             align: 'justify',
             lineGap: 4,
-            italic: true,
           });
       }
 

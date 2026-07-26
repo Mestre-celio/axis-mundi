@@ -17,10 +17,15 @@ export class SwissEphemerisService {
 
   async init(): Promise<void> {
     try {
-      const swisseph = await import('swisseph');
-      swisseph.swe_set_ephe_path(config.ephemeris.path);
-      this.initialized = true;
-      logger.info('Swiss Ephemeris initialized');
+      // @ts-expect-error - swisseph é opcional (fallback implementado)
+      const swisseph: any = await import('swisseph').catch(() => null);
+      if (swisseph?.swe_set_ephe_path) {
+        swisseph.swe_set_ephe_path(config.ephemeris.path);
+        this.initialized = true;
+        logger.info('Swiss Ephemeris initialized');
+      } else {
+        logger.warn('Swiss Ephemeris not available, using fallback');
+      }
     } catch (err) {
       logger.warn({ err }, 'Swiss Ephemeris not available, using fallback');
       this.initialized = false;
@@ -40,7 +45,8 @@ export class SwissEphemerisService {
     }
 
     try {
-      const swisseph = await import('swisseph');
+      // @ts-expect-error - swisseph é opcional (fallback implementado)
+      const swisseph: any = await import('swisseph');
 
       const julianDay = swisseph.swe_julday(
         year, month, day, hour,

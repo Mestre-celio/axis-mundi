@@ -38,13 +38,13 @@ export class AIService {
         }),
       });
 
+      const body: any = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new AppError(502, 'AI_ERROR', error.error?.message || 'Erro na API de IA');
+        throw new AppError(502, 'AI_ERROR', body?.error?.message || 'Erro na API de IA');
       }
 
-      const data = await response.json();
-      const content = data.choices[0]?.message?.content || '';
+      const content = body?.choices?.[0]?.message?.content || '';
 
       return this.parseResponse(content);
     } catch (err) {
