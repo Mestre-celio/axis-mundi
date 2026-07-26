@@ -1,0 +1,24 @@
+[project]
+name = "axis-mundi"
+plan = "free"
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/**"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_confirmations = false
+enable_autoconfirm = true
+
+[api]
+port = 54321
+schemas = ["public", "auth", "storage"]
+
+[db]
+migration_dir = "supabase/migrations"
+
+[storage]
+buckets = ["axis-mundi-docs"]

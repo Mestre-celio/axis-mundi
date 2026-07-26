@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <!-- Filtro de Brilho Místico (Glow Espiritual) -->
+    <filter id="gold-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Fundo de Galáxia Profunda (Névoa Magenta/Violeta/Azul Meia-Noite) -->
+    <radialGradient id="galaxy-core" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#3B0764" /> <!-- Violeta Vivo -->
+      <stop offset="40%" stop-color="#1E1B4B" /> <!-- Índigo Profundo -->
+      <stop offset="80%" stop-color="#0F172A" /> <!-- Azul Meia-Noite -->
+      <stop offset="100%" stop-color="#020617" /> <!-- Preto Absoluto -->
+    </radialGradient>
+
+    <!-- Gradiente Dourado de Luxo (Ouro 24k Reluzente) -->
+    <linearGradient id="gold-24k" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#85581A" />
+      <stop offset="20%" stop-color="#E6C667" />
+      <stop offset="50%" stop-color="#FDF0A6" />
+      <stop offset="75%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#9A7B38" />
+    </linearGradient>
+
+    <!-- Gradiente da Moldura Externa -->
+    <radialGradient id="ring-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="70%" stop-color="#D4AF37" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- 1. FUNDO CÓSMICO E POEIRA ESTELAR -->
+  <rect width="800" height="800" rx="40" fill="url(#galaxy-core)" />
+  <circle cx="400" cy="400" r="320" fill="url(#ring-glow)" />
+
+  <!-- Constelações e Brilhos no Fundo -->
+  <g fill="#FFF">
+    <!-- Estrelas Maiores com Glow -->
+    <g filter="url(#gold-glow)">
+      <circle cx="200" cy="180" r="2.5" opacity="0.9" fill="#E6C667" />
+      <circle cx="620" cy="220" r="3" opacity="0.8" fill="#FDF0A6" />
+      <circle cx="160" cy="580" r="2.2" opacity="0.85" fill="#E6C667" />
+      <circle cx="650" cy="560" r="2.8" opacity="0.9" fill="#FFF" />
+      <circle cx="400" cy="100" r="3" opacity="0.95" fill="#FDF0A6" />
+    </g>
+    <!-- Micro-estrelas variadas -->
+    <circle cx="120" cy="300" r="1.2" opacity="0.5" />
+    <circle cx="280" cy="140" r="1.5" opacity="0.7" />
+    <circle cx="520" cy="120" r="1" opacity="0.6" />
+    <circle cx="680" cy="380" r="1.5" opacity="0.4" />
+    <circle cx="240" cy="660" r="1.2" opacity="0.7" />
+    <circle cx="560" cy="670" r="1.6" opacity="0.5" />
+  </g>
+
+  <!-- 2. ANEL DE MOLDURA EDITORIAL (INSPIRADO NA IMAGEM 1) -->
+  <g transform="translate(400, 380)" filter="url(#gold-glow)">
+    
+    <!-- Borda Externa Pontilhada Sagrada -->
+    <circle r="290" fill="none" stroke="url(#gold-24k)" stroke-width="1.5" stroke-dasharray="3 6" opacity="0.6" />
+    <circle r="275" fill="none" stroke="url(#gold-24k)" stroke-width="2" />
+    <circle r="265" fill="none" stroke="url(#gold-24k)" stroke-width="1" opacity="0.4" />
+
+    <!-- Texto Arqueado em Arco (Selo Superior e Inferior) -->
+    <path id="text-path-top" d="M -230,0 A 230,230 0 0,1 230,0" fill="none" />
+    <text font-family="'Cinzel', 'Cormorant Garamond', serif" font-size="20" font-weight="600" fill="url(#gold-24k)" letter-spacing="9" opacity="0.95">
+      <textPath href="#text-path-top" startOffset="50%" text-anchor="middle">
+        AXIS MUNDI
+      </textPath>
+    </text>
+
+    <path id="text-path-bottom" d="M 230,0 A 230,230 0 0,1 -230,0" fill="none" />
+    <text font-family="'Inter', 'Montserrat', sans-serif" font-size="11" font-weight="400" fill="url(#gold-24k)" letter-spacing="5" opacity="0.8">
+      <textPath href="#text-path-bottom" startOffset="50%" text-anchor="middle">
+        SABEDORIA &amp; CONSCIÊNCIA
+      </textPath>
+    </text>
+
+    <circle r="200" fill="none" stroke="url(#gold-24k)" stroke-width="1.5" opacity="0.7" />
+
+    <!-- 3. GEOMETRIA DE FUSÃO CENTRAL (MANDALA + SÍMBOLOS LUNARES/OLHO DA IMAGEM 2) -->
+
+    <!-- Círculos Laterais Lunares (Da Imagem 2) -->
+    <circle cx="-90" cy="0" r="75" fill="none" stroke="url(#gold-24k)" stroke-width="1.2" opacity="0.5" />
+    <circle cx="90" cy="0" r="75" fill="none" stroke="url(#gold-24k)" stroke-width="1.2" opacity="0.5" />
+
+    <!-- PÉTALAS DA MANDALA / FLOR DA VIDA (Da Imagem 1) -->
+    <g stroke="url(#gold-24k)" fill="none" stroke-width="1.2" opacity="0.8">
+      <circle cx="0" cy="-50" r="50" />
+      <circle cx="43.3" cy="-25" r="50" />
+      <circle cx="43.3" cy="25" r="50" />
+      <circle cx="0" cy="50" r="50" />
+      <circle cx="-43.3" cy="25" r="50" />
+      <circle cx="-43.3" cy="-25" r="50" />
+    </g>
+
+    <!-- O EIXO VERTICAL (AXIS MUNDI) -->
+    <line x1="0" y1="-255" x2="0" y2="255" stroke="url(#gold-24k)" stroke-width="2" stroke-linecap="round" />
+
+    <!-- Luas Crescentes Verticais (Topo e Base do Eixo) -->
+    <path d="M -15,-190 A 18,18 0 0,1 15,-190 A 22,22 0 0,0 -15,-190" fill="url(#gold-24k)" />
+    <path d="M -15,190 A 18,18 0 0,0 15,190 A 22,22 0 0,1 -15,190" fill="url(#gold-24k)" />
+
+    <!-- Estrela Guia de 8 Pontas no Topo -->
+    <path d="M 0,-265 L 4,-252 L 17,-252 L 7,-243 L 10,-230 L 0,-238 L -10,-230 L -7,-243 L -17,-252 L -4,-252 Z" fill="url(#gold-24k)" />
+
+    <!-- OLHO DA INTUIÇÃO / PROVIDÊNCIA NO CENTRO (Da Imagem 2) -->
+    <g transform="scale(0.95)">
+      <!-- Amêndoa do Olho (Vesica Piscis) -->
+      <path d="M -50,0 Q 0,-35 50,0 Q 0,35 -50,0 Z" fill="#020617" stroke="url(#gold-24k)" stroke-width="2" />
+      <!-- Íris e Pupila Consciente -->
+      <circle cx="0" cy="0" r="16" fill="none" stroke="url(#gold-24k)" stroke-width="1.8" />
+      <circle cx="0" cy="0" r="7" fill="url(#gold-24k)" />
+      <circle cx="-2" cy="-2" r="2.5" fill="#FFF" />
+    </g>
+
+    <!-- Raios Solares / Linhas Orbitais Delicadas -->
+    <line x1="-150" y1="0" x2="-195" y2="0" stroke="url(#gold-24k)" stroke-width="1.5" stroke-dasharray="2 4" />
+    <line x1="150" y1="0" x2="195" y2="0" stroke="url(#gold-24k)" stroke-width="1.5" stroke-dasharray="2 4" />
+  </g>
+</svg>

@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap');
+
+@layer base {
+  body {
+    @apply bg-midnight-500 text-gray-200 font-sans antialiased;
+  }
+
+  ::selection {
+    @apply bg-gold-500/30 text-gold-200;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-midnight-600;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gold-500/20 rounded-full hover:bg-gold-500/40;
+  }
+}
+
+@layer components {
+  .heading-serif {
+    @apply font-serif text-3xl md:text-5xl tracking-tight;
+  }
+
+  .heading-display {
+    @apply font-display text-4xl md:text-6xl uppercase tracking-widest;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.15);
+  }
+}
+
+@layer utilities {
+  .cosmic-fade {
+    background: linear-gradient(180deg, rgba(10, 10, 26, 0) 0%, rgba(10, 10, 26, 1) 100%);
+  }
+}

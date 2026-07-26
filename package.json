@@ -1,0 +1,21 @@
+{
+  "name": "axis-mundi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portal Oracle das Religiões — Axis Mundi",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "db:migrate": "cd database && psql ...", 
+    "db:seed": "cd database && psql ...",
+    "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
