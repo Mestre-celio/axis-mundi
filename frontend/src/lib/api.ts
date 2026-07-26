@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import type { Oracle, Reading, Order, Profile, OracleCard } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
 
@@ -27,42 +28,37 @@ async function request<T>(
     headers,
   });
 
-  const json = await res.json();
+  const json: { success: boolean; data?: T; error?: { code: string; message: string } } = await res.json();
 
-  if (!res.ok) {
+  if (!res.ok || !json.success) {
     throw new Error(json.error?.message || 'Erro na requisição');
   }
 
-  return json.data;
+  return json.data as T;
 }
 
 export const api = {
-  // Oracles
-  getOracles: () => request<any[]>('/oracles'),
-  getOracle: (slug: string) => request<any>(`/oracles/${slug}`),
+  getOracles: () => request<Oracle[]>('/oracles'),
+  getOracle: (slug: string) => request<Oracle>(`/oracles/${slug}`),
 
-  // Readings
-  createReading: (data: any) =>
-    request<any>('/readings', { method: 'POST', body: JSON.stringify(data) }),
-  getReadings: () => request<any[]>('/readings'),
-  getReading: (id: string) => request<any>(`/readings/${id}`),
+  createReading: (data: { oracle_slug: string; question?: string; cards_count: number; tone?: string }) =>
+    request<Reading>('/readings', { method: 'POST', body: JSON.stringify(data) }),
+  getReadings: () => request<Reading[]>('/readings'),
+  getReading: (id: string) => request<Reading & { oracle_cards?: OracleCard[] }>(`/readings/${id}`),
 
-  // Orders
   createOrder: (data: { reading_id: string; item_type: string }) =>
-    request<any>('/orders', { method: 'POST', body: JSON.stringify(data) }),
-  getOrders: () => request<any[]>('/orders'),
-  getOrder: (id: string) => request<any>(`/orders/${id}`),
+    request<Order>('/orders', { method: 'POST', body: JSON.stringify(data) }),
+  getOrders: () => request<Order[]>('/orders'),
+  getOrder: (id: string) => request<Order>(`/orders/${id}`),
 
-  // Dossiers
   generateDossier: (readingId: string) =>
-    request<any>('/dossiers/generate', {
+    request<{ id: string; filePath: string; storageKey: string }>('/dossiers/generate', {
       method: 'POST',
       body: JSON.stringify({ reading_id: readingId }),
     }),
-  downloadDossier: (id: string) => request<any>(`/dossiers/${id}/download`),
+  downloadDossier: (id: string) => request<{ download_url: string }>(`/dossiers/${id}/download`),
 
-  // Profile
-  getProfile: () => request<any>('/profile'),
-  updateProfile: (data: any) =>
-    request<any>('/profile', { method: 'PUT', body: JSON.stringify(data) }),
+  getProfile: () => request<Profile>('/profile'),
+  updateProfile: (data: Partial<Profile>) =>
+    request<Profile>('/profile', { method: 'PUT', body: JSON.stringify(data) }),
 };
