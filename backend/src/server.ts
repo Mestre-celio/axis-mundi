@@ -23,14 +23,22 @@ app.use(rateLimit({
 
 app.use('/api/v1', routes);
 
+app.get('/', (_req, res) => {
+  res.json({ status: 'ok', service: 'axis-mundi-backend', version: '1.0.0' });
+});
+
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'axis-mundi-backend', timestamp: new Date().toISOString() });
 });
 
 app.use(errorHandler);
 
-app.listen(config.port, () => {
-  logger.info(`Axis Mundi API rodando na porta ${config.port}`);
+const PORT = config.port;
+const HOST = '0.0.0.0';
+
+app.listen(PORT, HOST, () => {
+  logger.info(`Axis Mundi API rodando em http://${HOST}:${PORT}`);
+  logger.info(`Ambiente: ${config.nodeEnv}`);
 });
 
 export default app;
