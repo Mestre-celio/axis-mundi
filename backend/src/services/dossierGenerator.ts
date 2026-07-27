@@ -1,6 +1,7 @@
 import PDFDocument from 'pdfkit';
 import path from 'path';
 import fs from 'fs/promises';
+import { createWriteStream } from 'fs';
 import { v4 as uuid } from 'uuid';
 import { supabaseAdmin } from '../lib/supabase';
 import { logger } from '../lib/logger';
@@ -95,7 +96,7 @@ export class DossierGenerator {
         },
       });
 
-      const stream = require('fs').createWriteStream(params.filePath);
+      const stream = createWriteStream(params.filePath);
       doc.pipe(stream);
 
       // === CAPA ===

@@ -15,7 +15,7 @@ export default function DossiersPage() {
 
   useEffect(() => {
     api.getReadings()
-      .then((r) => setReadings(r.filter((x: any) => x.ai_interpretation)))
+      .then((r) => setReadings(r.filter((x) => x.ai_interpretation)))
       .catch(() => setReadings([]))
       .finally(() => setLoading(false));
   }, []);

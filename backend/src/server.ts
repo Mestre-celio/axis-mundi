@@ -35,13 +35,18 @@ app.use(helmet());
 app.use(cors({ origin: config.frontendUrl, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 
-app.use(rateLimit({
+const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: { code: 'RATE_LIMIT', message: 'Muitas requisições. Aguarde um momento.' } },
-}));
+});
+
+app.use('/api/v1', (req, res, next) => {
+  if (req.path.startsWith('/webhooks/')) return next();
+  return limiter(req, res, next);
+});
 
 app.get('/', (_req, res) => {
   res.json({ status: 'ok', service: 'axis-mundi-backend', version: '1.0.0' });

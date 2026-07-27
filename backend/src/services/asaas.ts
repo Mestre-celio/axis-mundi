@@ -26,10 +26,13 @@ export class AsaasService {
   private api;
 
   constructor() {
+    if (!config.asaas.apiKey) {
+      logger.warn('ASAAS_API_KEY não configurada — pagamentos PIX não funcionarão');
+    }
     this.api = axios.create({
       baseURL: config.asaas.baseUrl,
       headers: {
-        'access_token': config.asaas.apiKey,
+        'access_token': config.asaas.apiKey || 'not-configured',
         'Content-Type': 'application/json',
       },
       timeout: 15000,
@@ -37,6 +40,9 @@ export class AsaasService {
   }
 
   async createPixPayment(params: CreatePaymentParams): Promise<AsaasPaymentResponse> {
+    if (!config.asaas.apiKey) {
+      throw new AppError(503, 'PAYMENT_UNAVAILABLE', 'Gateway de pagamento não configurado (ASAAS_API_KEY ausente)');
+    }
     try {
       const { data } = await this.api.post<AsaasPaymentResponse>('/payments', {
         customer: params.userId,
@@ -63,6 +69,9 @@ export class AsaasService {
   }
 
   async getPayment(paymentId: string): Promise<AsaasPaymentResponse> {
+    if (!config.asaas.apiKey) {
+      throw new AppError(503, 'PAYMENT_UNAVAILABLE', 'Gateway de pagamento não configurado (ASAAS_API_KEY ausente)');
+    }
     try {
       const { data } = await this.api.get<AsaasPaymentResponse>(`/payments/${paymentId}`);
       return data;

@@ -41,5 +41,6 @@ export const config = {
   whatsapp: {
     apiUrl: process.env.WHATSAPP_API_URL || 'http://localhost:8080',
     apiKey: process.env.WHATSAPP_API_KEY || '',
+    instancePhone: process.env.WHATSAPP_INSTANCE_PHONE || '',
   },
 } as const;

@@ -4,6 +4,7 @@ import { logger } from '../../lib/logger';
 import { config } from '../../config';
 import { AsaasService } from '../../services/asaas';
 import { DossierGenerator } from '../../services/dossierGenerator';
+import { WhatsAppService } from '../../services/whatsapp';
 
 const ASAAS_EVENT_MAP: Record<string, string> = {
   PAYMENT_RECEIVED: 'confirmed',
@@ -58,21 +59,46 @@ export const webhookController = {
         })
         .eq('id', order.id);
 
-      // Se confirmado, dispara geração do dossiê
+      // Se confirmado, dispara geração do dossiê (falha não quebra o fluxo)
       if (dbStatus === 'confirmed') {
-        const dossierGen = new DossierGenerator();
-        const dossier = await dossierGen.generate(order);
+        try {
+          const dossierGen = new DossierGenerator();
+          const dossier = await dossierGen.generate(order);
 
-        await supabaseAdmin.from('generated_documents').insert({
-          order_item_id: order.order_items[0]?.id,
-          reading_id: order.order_items[0]?.reading_id,
-          file_path: dossier.filePath,
-          storage_key: dossier.storageKey,
-          status: 'ready',
-          generated_at: new Date().toISOString(),
-        });
+          await supabaseAdmin.from('generated_documents').insert({
+            order_item_id: order.order_items[0]?.id,
+            reading_id: order.order_items[0]?.reading_id,
+            file_path: dossier.filePath,
+            storage_key: dossier.storageKey,
+            status: 'ready',
+            generated_at: new Date().toISOString(),
+          });
 
-        logger.info({ orderId: order.id, document: dossier.filePath }, 'Dossiê gerado com sucesso');
+          logger.info({ orderId: order.id, document: dossier.filePath }, 'Dossiê gerado com sucesso');
+
+          // Notifica por WhatsApp (falha não quebra o fluxo)
+          try {
+            const { data: userProfile } = await supabaseAdmin
+              .from('profiles')
+              .select('phone, display_name')
+              .eq('id', order.user_id)
+              .single();
+
+            if (userProfile?.phone) {
+              const wa = new WhatsAppService();
+              const dossierLink = `${config.frontendUrl}/dashboard/readings?id=${order.order_items[0]?.reading_id}`;
+              await wa.sendDossierLink({
+                phone: userProfile.phone,
+                message: `Olá ${userProfile.display_name || 'consultante'}, seu dossiê astrológico-arquetípico já está disponível!`,
+                mediaUrl: dossierLink,
+              });
+            }
+          } catch (waErr) {
+            logger.error({ err: waErr, orderId: order.id }, 'Falha ao notificar por WhatsApp (não crítico)');
+          }
+        } catch (docErr) {
+          logger.error({ err: docErr, orderId: order.id }, 'Falha ao gerar dossiê (não crítico)');
+        }
       }
 
       // Marca webhook como processado

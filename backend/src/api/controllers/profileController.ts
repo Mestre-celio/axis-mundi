@@ -6,7 +6,7 @@ import { AuthenticatedRequest } from '../../middleware/auth';
 
 const updateProfileSchema = z.object({
   display_name: z.string().min  (2).max(100).optional(),
-  phone: z.string().optional(),
+  phone: z.string().regex(/^\d{10,15}$/, 'Telefone inválido. Use apenas números com DDD.').optional(),
   birth_date: z.string().optional(),
   birth_time: z.string().optional(),
   birth_city: z.string().optional(),
