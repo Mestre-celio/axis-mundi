@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { api } from '@/lib/api';
@@ -10,6 +10,19 @@ import { formatDate } from '@/lib/utils';
 import type { Reading } from '@/types';
 
 export default function ReadingDetailPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-4xl mx-auto px-4 py-20">
+        <div className="h-8 w-48 rounded bg-midnight-400/30 animate-pulse mb-6" />
+        <div className="h-64 rounded-lg bg-midnight-400/30 animate-pulse" />
+      </div>
+    }>
+      <ReadingDetailContent />
+    </Suspense>
+  );
+}
+
+function ReadingDetailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get('id');

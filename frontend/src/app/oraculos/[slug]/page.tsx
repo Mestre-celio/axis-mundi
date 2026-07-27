@@ -49,7 +49,7 @@ export default function OraclePage() {
         item_type: 'dossie_avulso',
       });
 
-      router.push(`/checkout?order_id=${order.order_id}`);
+      router.push(`/checkout?order_id=${order.id}`);
     } catch (err: any) {
       toast.error(err.message || 'Erro ao gerar leitura');
     } finally {
