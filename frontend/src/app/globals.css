@@ -2,15 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap');
-
 @layer base {
   body {
-    @apply bg-midnight-500 text-gray-200 font-sans antialiased;
+    @apply bg-[#040208] text-gray-200 font-sans antialiased;
   }
 
   ::selection {
-    @apply bg-gold-500/30 text-gold-200;
+    @apply bg-[#E5C158]/30 text-[#FFF5C0];
   }
 
   ::-webkit-scrollbar {
@@ -18,11 +16,11 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-midnight-600;
+    @apply bg-[#0A0618];
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-gold-500/20 rounded-full hover:bg-gold-500/40;
+    @apply bg-[#E5C158]/20 rounded-full hover:bg-[#E5C158]/40;
   }
 }
 
@@ -40,12 +38,22 @@
   }
 
   .glow-gold {
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.15);
+    box-shadow: 0 0 30px rgba(229, 193, 88, 0.15);
+  }
+
+  .glow-lilac {
+    box-shadow: 0 0 30px rgba(216, 180, 248, 0.1);
   }
 }
 
 @layer utilities {
   .cosmic-fade {
-    background: linear-gradient(180deg, rgba(10, 10, 26, 0) 0%, rgba(10, 10, 26, 1) 100%);
+    background: linear-gradient(180deg, rgba(4, 2, 8, 0) 0%, rgba(4, 2, 8, 1) 100%);
+  }
+
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #FFF5C0 0%, #E5C158 50%, #946E19 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }

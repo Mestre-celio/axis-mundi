@@ -13,7 +13,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body className="min-h-screen flex flex-col">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet" />
+      </head>
+      <body className="min-h-screen flex flex-col bg-[#040208]">
         <Stars />
         <Header />
         <main className="flex-grow relative z-10 pt-16">
@@ -24,11 +29,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           position="bottom-right"
           toastOptions={{
             style: {
-              background: '#0a0a1a',
-              color: '#e6e6f0',
-              border: '1px solid rgba(212, 175, 55, 0.2)',
+              background: '#1F0B38',
+              color: '#D8B4F8',
+              border: '1px solid rgba(229, 193, 88, 0.2)',
             },
-            success: { iconTheme: { primary: '#d4af37', secondary: '#0a0a1a' } },
+            success: { iconTheme: { primary: '#E5C158', secondary: '#1F0B38' } },
           }}
         />
       </body>

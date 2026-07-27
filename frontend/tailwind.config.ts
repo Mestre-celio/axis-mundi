@@ -23,32 +23,50 @@ const config: Config = {
           200: '#f5e288',
           300: '#f1d758',
           400: '#edcc28',
-          500: '#d4af37',
+          500: '#E5C158',
           600: '#b8942e',
           700: '#9c7a26',
           800: '#80601e',
           900: '#644616',
         },
-        mystical: {
-          purple: '#6b3fa0',
-          indigo: '#3b1f6e',
-          teal: '#1a8a7d',
-          rose: '#c73e6b',
+        space: {
+          black: '#040208',
+          navy: '#0A0618',
+          purple: '#1F0B38',
+        },
+        imperial: {
+          light: '#FFF5C0',
+          main: '#E5C158',
+          dark: '#946E19',
+        },
+        cosmic: {
+          lilac: '#D8B4F8',
+          violet: '#9D4EDD',
+        },
+        tradition: {
+          hermetismo: '#D4AF37',
+          tarot: '#9D4EDD',
+          runas: '#3A86FF',
+          iching: '#00F5D4',
+          orixas: '#FF007F',
+          kabbalah: '#FFD166',
         },
       },
       fontFamily: {
         serif: ['Cormorant Garamond', 'Georgia', 'serif'],
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Montserrat', 'Inter', 'system-ui', 'sans-serif'],
         display: ['Cinzel', 'Georgia', 'serif'],
       },
       backgroundImage: {
-        'cosmic-gradient': 'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a0a1a 100%)',
-        'gold-glow': 'radial-gradient(ellipse at center, #d4af37 0%, transparent 70%)',
+        'cosmic-gradient': 'radial-gradient(circle at center, #1F0B38 0%, #040208 70%)',
+        'gold-glow': 'radial-gradient(ellipse at center, #E5C158 0%, transparent 70%)',
+        'gold-divider': 'linear-gradient(90deg, transparent, #E5C158, transparent)',
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',
         'pulse-gold': 'pulseGold 2s ease-in-out infinite',
         'twinkle': 'twinkle 3s ease-in-out infinite',
+        'emblem-glow': 'emblemGlow 4s ease-in-out infinite',
       },
       keyframes: {
         float: {
@@ -62,6 +80,10 @@ const config: Config = {
         twinkle: {
           '0%, 100%': { opacity: '0.3' },
           '50%': { opacity: '1' },
+        },
+        emblemGlow: {
+          '0%, 100%': { filter: 'drop-shadow(0 0 25px rgba(229, 193, 88, 0.35))' },
+          '50%': { filter: 'drop-shadow(0 0 45px rgba(229, 193, 88, 0.55))' },
         },
       },
     },
