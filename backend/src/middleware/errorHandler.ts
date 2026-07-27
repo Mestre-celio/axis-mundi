@@ -41,6 +41,14 @@ export function errorHandler(
     });
   }
 
+  if ('statusCode' in err && typeof err.statusCode === 'number') {
+    return res.status(err.statusCode).json({
+      success: false,
+      error: { code: 'BAD_REQUEST', message: err.message },
+      meta: { timestamp: new Date().toISOString() },
+    });
+  }
+
   logger.error({ err }, 'Internal server error');
 
   return res.status(500).json({
