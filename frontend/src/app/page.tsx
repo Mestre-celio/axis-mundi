@@ -2,24 +2,16 @@ import Link from 'next/link';
 import { Emblem } from '@/components/brand/Emblem';
 
 const oracles = [
-  { slug: 'tarot', name: 'Tarot', icon: '🔮', trad: 'Ocidental', color: 'tarot' },
-  { slug: 'ifa', name: 'Ifá', icon: '🌴', trad: 'Africana', color: 'orixas' },
-  { slug: 'runas', name: 'Runas', icon: 'ᚱ', trad: 'Nórdica', color: 'runas' },
-  { slug: 'iching', name: 'I Ching', icon: '☯', trad: 'Oriental', color: 'iching' },
-  { slug: 'orixas', name: 'Orixás', icon: '🌊', trad: 'Africana', color: 'orixas' },
-] as const;
-
-const accentMap: Record<string, string> = {
-  tarot: 'rgba(157, 78, 221, 0.6)',
-  runas: 'rgba(58, 134, 255, 0.6)',
-  iching: 'rgba(0, 245, 212, 0.6)',
-  orixas: 'rgba(255, 0, 127, 0.6)',
-};
+  { slug: 'tarot', name: 'Tarot', icon: '🔮', trad: 'Ocidental', border: 'hover:border-[#9D4EDD] hover:shadow-[#9D4EDD]/10' },
+  { slug: 'ifa', name: 'Ifá', icon: '🌴', trad: 'Africana', border: 'hover:border-[#FF007F] hover:shadow-[#FF007F]/10' },
+  { slug: 'runas', name: 'Runas', icon: 'ᚱ', trad: 'Nórdica', border: 'hover:border-[#3A86FF] hover:shadow-[#3A86FF]/10' },
+  { slug: 'iching', name: 'I Ching', icon: '☯', trad: 'Oriental', border: 'hover:border-[#00F5D4] hover:shadow-[#00F5D4]/10' },
+  { slug: 'orixas', name: 'Orixás', icon: '🌊', trad: 'Africana', border: 'hover:border-[#FF007F] hover:shadow-[#FF007F]/10' },
+];
 
 export default function Home() {
   return (
     <div className="relative">
-      {/* HERO */}
       <section className="min-h-[90vh] flex items-center justify-center px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1F0B38_0%,#040208_70%)]" />
         <div className="text-center max-w-4xl mx-auto relative z-10">
@@ -33,13 +25,7 @@ export default function Home() {
             <Emblem />
           </div>
 
-          <h1 className="font-display text-5xl md:text-7xl uppercase tracking-[0.35em] mb-6"
-            style={{
-              background: 'linear-gradient(135deg, #FFF5C0 0%, #E5C158 50%, #946E19 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
+          <h1 className="font-display text-5xl md:text-7xl uppercase tracking-[0.35em] mb-6 text-gold-gradient">
             PORTAL AXIUM
           </h1>
 
@@ -47,9 +33,7 @@ export default function Home() {
             O eixo do mundo onde o céu encontra a terra
           </p>
 
-          <div className="w-[180px] h-[1px] mx-auto mb-10"
-            style={{ background: 'linear-gradient(90deg, transparent, #E5C158, transparent)', opacity: 0.6 }}
-          />
+          <div className="w-[180px] h-[1px] mx-auto mb-10 bg-gold-divider opacity-60" />
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
@@ -60,17 +44,12 @@ export default function Home() {
                 color: '#040208',
                 boxShadow: '0 0 20px rgba(229, 193, 88, 0.3)',
               }}
-              onMouseOver={(e) => { e.currentTarget.style.boxShadow = '0 0 30px rgba(229, 193, 88, 0.5)' }}
-              onMouseOut={(e) => { e.currentTarget.style.boxShadow = '0 0 20px rgba(229, 193, 88, 0.3)' }}
             >
               Explorar Oráculos
             </Link>
             <Link
               href="/register"
-              className="px-10 py-3 rounded font-medium text-sm tracking-wider uppercase transition-all duration-300 border"
-              style={{ borderColor: 'rgba(229, 193, 88, 0.3)', color: '#E5C158' }}
-              onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(229, 193, 88, 0.1)' }}
-              onMouseOut={(e) => { e.currentTarget.style.background = 'transparent' }}
+              className="px-10 py-3 rounded font-medium text-sm tracking-wider uppercase transition-all duration-300 border border-[#E5C158]/30 text-[#E5C158] hover:bg-[#E5C158]/10"
             >
               Criar Conta
             </Link>
@@ -78,17 +57,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ORÁCULOS */}
-      <section className="py-24 px-4 border-t" style={{ borderColor: 'rgba(229, 193, 88, 0.1)' }}>
+      <section className="py-24 px-4 border-t border-[#E5C158]/10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-display text-3xl md:text-4xl mb-4"
-              style={{
-                background: 'linear-gradient(135deg, #FFF5C0 0%, #E5C158 50%, #946E19 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
+            <h2 className="font-display text-3xl md:text-4xl mb-4 text-gold-gradient">
               Os Oráculos
             </h2>
             <p className="text-[#D8B4F8] max-w-xl mx-auto text-sm tracking-wider">
@@ -101,38 +73,25 @@ export default function Home() {
               <Link
                 key={o.slug}
                 href={`/oraculos/${o.slug}`}
-                className="group flex flex-col items-center p-6 rounded-xl transition-all duration-300"
-                style={{
-                  background: 'rgba(31, 11, 56, 0.5)',
-                  border: '1px solid rgba(229, 193, 88, 0.1)',
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.borderColor = accentMap[o.color];
-                  e.currentTarget.style.boxShadow = `0 0 20px ${accentMap[o.color].replace('0.6', '0.1')}`;
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(229, 193, 88, 0.1)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
+                className={`group flex flex-col items-center p-6 rounded-xl transition-all duration-300 bg-[#1F0B38]/50 border border-[#E5C158]/10 ${o.border} hover:shadow-lg`}
               >
                 <span className="text-4xl mb-3 group-hover:scale-110 transition-transform">
                   {o.icon}
                 </span>
-                <span className="font-display text-sm" style={{ color: '#E5C158' }}>{o.name}</span>
-                <span className="text-xs mt-1 opacity-50" style={{ color: '#D8B4F8' }}>{o.trad}</span>
+                <span className="font-display text-sm text-[#E5C158]">{o.name}</span>
+                <span className="text-xs mt-1 text-[#D8B4F8]/50">{o.trad}</span>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CITAÇÃO */}
-      <section className="py-24 px-4" style={{ background: 'rgba(10, 6, 24, 0.5)' }}>
+      <section className="py-24 px-4 bg-[#0A0618]/50">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-cinzel text-2xl md:text-3xl mb-6 text-gray-200 font-light italic">
+          <h2 className="font-display text-2xl md:text-3xl mb-6 text-gray-200 font-light italic">
             &ldquo;O conhecimento é a ponte entre os mundos&rdquo;
           </h2>
-          <p className="text-sm max-w-lg mx-auto opacity-60" style={{ color: '#D8B4F8' }}>
+          <p className="text-sm max-w-lg mx-auto text-[#D8B4F8]/60">
             Cada leitura é um dossiê astrológico-arquetípico único, gerado por IA com profundo respeito às tradições.
           </p>
         </div>
