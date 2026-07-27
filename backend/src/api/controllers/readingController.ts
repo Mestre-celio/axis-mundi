@@ -78,7 +78,12 @@ export const readingController = {
         cards: cardsForAI,
         question: body.question,
         tone: body.tone,
-        resonancePattern: resonanceData.pattern,
+        resonancePattern: resonanceData?.pattern,
+        temperament: resonanceData?.dominant_archetype,
+        chakraFocus: resonanceData?.dominant_archetype?.includes('sabedoria') ? 'Coronário'
+          : resonanceData?.dominant_archetype?.includes('poder') ? 'Plexo Solar'
+          : resonanceData?.dominant_archetype?.includes('amor') ? 'Cardíaco'
+          : 'Coronário',
       }).catch((err) => {
         logger.error({ err, readingId: reading.id }, 'Falha ao gerar interpretação por IA');
         return null;
