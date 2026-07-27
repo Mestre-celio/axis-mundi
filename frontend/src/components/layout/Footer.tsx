@@ -28,7 +28,7 @@ export function Footer() {
         </div>
         <div className="mt-8 pt-8 border-t border-gold-500/10 text-center">
           <p className="text-xs text-gray-600">
-            &copy; {new Date().getFullYear()} Axis Mundi. Todos os direitos reservados.
+            &copy; {new Date().getFullYear()} Portal Axium. Todos os direitos reservados.
           </p>
         </div>
       </div>

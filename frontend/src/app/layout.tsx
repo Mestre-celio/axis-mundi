@@ -6,7 +6,7 @@ import { Stars } from '@/components/layout/Stars';
 import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
-  title: 'Axis Mundi — Portal Oracle das Religiões',
+  title: 'Portal Axium — Oráculo e Autoconhecimento',
   description: 'Onde a sabedoria ancestral encontra a tecnologia. Tarot, Ifá, Runas, I Ching e Orixás em um só templo digital.',
 };
 

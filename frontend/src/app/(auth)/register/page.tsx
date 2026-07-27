@@ -32,7 +32,7 @@ export default function RegisterPage() {
       <Card variant="glass" className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="font-display text-2xl text-gold-500 mb-2">Criar Conta</h1>
-          <p className="text-sm text-gray-500">Inicie sua jornada no Axis Mundi</p>
+          <p className="text-sm text-gray-500">Inicie sua jornada no Portal Axium</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">

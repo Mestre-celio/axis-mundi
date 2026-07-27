@@ -12,7 +12,7 @@ export default function Home() {
           </div>
 
           <h1 className="heading-display text-gold-500 mb-6 leading-tight">
-            Axis Mundi
+            Portal Axium
           </h1>
 
           <p className="heading-serif text-gray-300 text-balance mb-12 leading-relaxed max-w-2xl mx-auto">

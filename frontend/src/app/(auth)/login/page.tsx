@@ -18,7 +18,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signIn(email, password);
-      toast.success('Bem-vindo ao Axis Mundi');
+      toast.success('Bem-vindo ao Portal Axium');
     } catch (err: any) {
       toast.error(err.message || 'Erro ao entrar');
     } finally {
