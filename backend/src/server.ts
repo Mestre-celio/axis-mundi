@@ -31,6 +31,7 @@ if (config.nodeEnv === 'production' && config.jwt.secret === 'dev-secret-change-
 
 const app = express();
 
+app.set('trust proxy', 1);
 app.use(helmet());
 app.use(cors({ origin: config.frontendUrl, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
