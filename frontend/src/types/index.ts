@@ -1,90 +1,67 @@
-export type Oracle = {
+export interface Oracle {
   id: string;
   slug: string;
   name: string;
   tradition: string;
   description: string;
-  icon_url: string | null;
   total_cards: number;
-  config: Record<string, unknown>;
-};
+  created_at: string;
+}
 
-export type OracleCard = {
-  id: string;
-  code: string;
-  name: string;
-  number: number;
-  suit: string | null;
-  keywords: string[];
-  description: string | null;
-  image_url: string | null;
-};
-
-export type Reading = {
+export interface OracleCard {
   id: string;
   oracle_id: string;
+  name: string;
+  meaning: string;
+  symbolism: string;
+  imagery_description: string;
+  position: number;
+}
+
+export interface Reading {
+  id: string;
+  user_id: string;
+  oracle_slug: string;
+  question?: string;
+  cards_count: number;
+  tone?: string;
   cards_drawn: string[];
-  question: string | null;
-  resonance_data: ResonanceData;
-  archetypal_pattern: string;
-  ai_interpretation: string | null;
-  poetic_version: string | null;
-  tone: string;
-  energy_score: number | null;
+  archetypal_pattern?: string;
+  energy_score?: number;
+  ai_interpretation?: string;
+  poetic_version?: string;
   created_at: string;
-  oracles?: { name: string; slug: string };
-  oracle_cards?: OracleCard[];
-};
+  oracles?: { name: string };
+}
 
-export type ResonanceData = {
-  resonances: Array<{
-    card_id: string;
-    coefficient: number;
-    affinity: string;
-    description: string;
-  }>;
-  overall_harmony: number;
-  dominant_archetype: string;
-  pattern: string;
-};
-
-export type Order = {
+export interface Order {
   id: string;
-  status: OrderStatus;
+  user_id: string;
+  reading_id: string;
+  item_type: string;
   amount: number;
-  payment_method: string | null;
-  pix_qr_code: string | null;
-  pix_copy_paste: string | null;
-  asaas_payment_link: string | null;
-  paid_at: string | null;
+  status: 'pending' | 'processing' | 'confirmed' | 'failed' | 'refunded' | 'cancelled';
+  pix_qr_code?: string;
+  pix_copy_paste?: string;
+  asaas_payment_id?: string;
   created_at: string;
-  order_items?: OrderItem[];
-};
+  updated_at: string;
+}
 
-export type OrderStatus = 'pending' | 'processing' | 'confirmed' | 'failed' | 'cancelled' | 'refunded';
-
-export type OrderItem = {
+export interface Profile {
   id: string;
-  reading_id: string | null;
-  item_type: 'dossie_avulso' | 'assinatura_vip' | 'consulta';
-  description: string | null;
-  unit_price: number;
-};
-
-export type Profile = {
-  id: string;
-  display_name: string | null;
-  avatar_url: string | null;
-  phone: string | null;
-  astrological_sign: string | null;
-  spiritual_traditions: string[] | null;
-  is_vip: boolean;
-  vip_expires_at: string | null;
-  resonance_frequency: number | null;
-};
-
-export type ApiResponse<T> = {
-  success: boolean;
-  data?: T;
-  error?: { code: string; message: string };
-};
+  display_name?: string;
+  avatar_url?: string;
+  phone?: string;
+  birth_date?: string;
+  birth_time?: string;
+  birth_city?: string;
+  birth_country?: string;
+  astrological_sign?: string;
+  spiritual_traditions?: string[];
+  resonance_frequency?: number;
+  is_vip?: boolean;
+  vip_expires_at?: string;
+  created_at: string;
+  updated_at: string;
+}
