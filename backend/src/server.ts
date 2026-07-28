@@ -50,11 +50,11 @@ app.use('/api/v1', (req, res, next) => {
 });
 
 app.get('/', (_req, res) => {
-  res.json({ status: 'ok', service: 'axis-mundi-backend', version: '1.0.0' });
+  res.json({ status: 'ok', service: 'portal-axium-backend', version: '1.0.0' });
 });
 
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'axis-mundi-backend', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', service: 'portal-axium-backend', timestamp: new Date().toISOString() });
 });
 
 app.use('/api/v1', routes);

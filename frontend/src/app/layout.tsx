@@ -11,11 +11,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Portal Axium | O Eixo Sagrado do Seu Autoconhecimento',
     description: 'Consulte os astros, os números e a sabedoria ancestral. Gere seu Dossiê Pessoal completo agora.',
-    url: 'https://axis-mundi-five.vercel.app',
+    url: 'https://portal-axium-mestre-celios-projects.vercel.app',
     siteName: 'Portal Axium',
     images: [
       {
-        url: 'https://axis-mundi-five.vercel.app/og-image.jpg',
+        url: 'https://portal-axium-mestre-celios-projects.vercel.app/og-image.jpg',
         width: 1200,
         height: 630,
         alt: 'Emblema Lótus Cósmica dourada sobre fundo Azul Meia-Noite - Portal Axium',

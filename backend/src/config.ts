@@ -10,7 +10,7 @@ export const config = {
     url: process.env.SUPABASE_URL || '',
     anonKey: process.env.SUPABASE_ANON_KEY || '',
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-    storageBucket: process.env.STORAGE_BUCKET || 'axis-mundi-docs',
+    storageBucket: process.env.STORAGE_BUCKET || 'portal-axium-docs',
   },
 
   asaas: {

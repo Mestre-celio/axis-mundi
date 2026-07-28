@@ -77,11 +77,11 @@ function getMoonPhase(): { phase: string; energy: string; icon: string } {
   let jd = 0;
   let b = 0;
 
-  if (month < 3) {
-    year - 1;
-    month + 12;
+  if (month <= 2) {
+    year -= 1;
+    month += 12;
   }
-  month + 1;
+  month += 1;
   c = 365.25 * year;
   e = 30.66 * month;
   jd = c + e + day - 694039.09;

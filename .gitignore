@@ -7,3 +7,5 @@ dist/
 coverage/
 .turbo/
 .next/
+
+.vercel
