@@ -68,8 +68,8 @@ function seededRandom(seed: number, index: number): number {
 
 function getMoonPhase(): { phase: string; energy: string; icon: string } {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
+  let year = now.getFullYear();
+  let month = now.getMonth() + 1;
   const day = now.getDate();
 
   let c = 0;

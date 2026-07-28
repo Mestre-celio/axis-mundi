@@ -24,7 +24,6 @@ export default function ReadingDetailPage() {
 
 function ReadingDetailContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const id = searchParams.get('id');
   const [reading, setReading] = useState<Reading | null>(null);
   const [loading, setLoading] = useState(true);
