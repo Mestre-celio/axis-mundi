@@ -6,6 +6,7 @@ import { dossierController } from './controllers/dossierController';
 import { webhookController } from './controllers/webhookController';
 import { profileController } from './controllers/profileController';
 import { oracleController } from './controllers/oracleController';
+import { marketplaceController } from './controllers/marketplaceController';
 
 export const routes = Router();
 
@@ -13,6 +14,10 @@ export const routes = Router();
 routes.get('/oracles', oracleController.list);
 routes.get('/oracles/:slug', oracleController.getBySlug);
 routes.post('/webhooks/asaas', webhookController.handleAsaas);
+
+// --- Marketplace público ---
+routes.get('/sacerdotes', marketplaceController.listSacerdotes);
+routes.get('/sacerdotes/:id', marketplaceController.getSacerdote);
 
 // --- Rotas protegidas ---
 routes.use('/profile', requireAuth);
@@ -33,3 +38,9 @@ routes.use('/dossiers', requireAuth);
 routes.get('/dossiers/status', dossierController.status);
 routes.post('/dossiers/generate', dossierController.generate);
 routes.get('/dossiers/:id/download', dossierController.download);
+
+// --- Marketplace protegido ---
+routes.use('/agendamentos', requireAuth);
+routes.post('/agendamentos', marketplaceController.criarAgendamento);
+routes.get('/agendamentos', marketplaceController.listarAgendamentos);
+routes.get('/agendamentos/dashboard-sacerdote', marketplaceController.dashboardSacerdote);
