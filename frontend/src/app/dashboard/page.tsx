@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { formatBRL, formatDate } from '@/lib/utils';
 import { DailyDashboard } from '@/components/dashboard/DailyDashboard';
+import type { Reading, Order } from '@/types';
 
 export default function DashboardPage() {
   const { user, signOut } = useAuth();

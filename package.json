@@ -2,7 +2,7 @@
   "name": "axis-mundi",
   "version": "1.0.0",
   "private": true,
-  "description": "Portal Oracle das Religiões — Axis Mundi",
+  "description": "Portal Oracle das Religiões — Portal Axium",
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "cd backend && npm run dev",

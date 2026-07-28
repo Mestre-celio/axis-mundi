@@ -66,7 +66,7 @@ const HOST = '0.0.0.0';
 
 try {
   app.listen(PORT, HOST, () => {
-    console.log(`Axis Mundi API rodando em http://${HOST}:${PORT}`);
+    console.log(`Portal Axium API rodando em http://${HOST}:${PORT}`);
     console.log(`Ambiente: ${config.nodeEnv}`);
     logger.info(`Servidor iniciado na porta ${PORT}`);
   });

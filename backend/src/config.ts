@@ -24,9 +24,15 @@ export const config = {
     },
   },
 
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY || '',
-    model: process.env.OPENAI_MODEL || 'gpt-4o',
+  ai: {
+    provider: process.env.AI_PROVIDER || 'openai',   // 'openai' | 'groq'
+    apiKey: process.env.AI_API_KEY || '',
+    model: process.env.AI_MODEL || 'gpt-4o',
+    get baseUrl() {
+      return this.provider === 'groq'
+        ? 'https://api.groq.com/openai/v1'
+        : 'https://api.openai.com/v1';
+    },
   },
 
   ephemeris: {

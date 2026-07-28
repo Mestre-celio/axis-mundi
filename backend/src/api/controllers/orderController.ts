@@ -52,7 +52,7 @@ export const orderController = {
         item_type: body.item_type,
         description: body.item_type === 'dossie_avulso'
           ? 'Dossiê Astrológico-Arquetípico Avulso'
-          : 'Assinatura VIP — Clube Axis Mundi',
+          : 'Assinatura VIP — Clube Portal Axium',
         quantity: 1,
         unit_price: amount,
       });
@@ -62,7 +62,7 @@ export const orderController = {
         orderId: order.id,
         userId,
         value: amount,
-        description: `Axis Mundi - ${body.item_type === 'dossie_avulso' ? 'Dossiê' : 'VIP'}`,
+        description: `Portal Axium - ${body.item_type === 'dossie_avulso' ? 'Dossiê' : 'VIP'}`,
       });
 
       await supabaseAdmin

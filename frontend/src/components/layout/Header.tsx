@@ -19,7 +19,7 @@ export function Header() {
               background: 'linear-gradient(135deg, #FFF5C0 0%, #E5C158 50%, #946E19 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-            }}>AXIS MUNDI</span>
+            }}>PORTAL AXIUM</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">

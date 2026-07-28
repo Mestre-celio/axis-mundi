@@ -8,7 +8,7 @@ export function Footer() {
               background: 'linear-gradient(135deg, #FFF5C0 0%, #E5C158 50%, #946E19 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-            }}>AXIS MUNDI</span>
+            }}>PORTAL AXIUM</span>
             <p className="mt-2 text-sm text-gray-500">
               Portal Oracle das Religiões — onde a sabedoria ancestral encontra a tecnologia.
             </p>

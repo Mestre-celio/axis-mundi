@@ -13,7 +13,7 @@ interface AIInterpretationParams {
   chakraFocus?: string;
 }
 
-const SYSTEM_PROMPT_GUARDIAO = `Você é o "Guardião do Axis Mundi", um assistente de sabedoria e autoconhecimento treinado exclusivamente no método "Terapia Integrativa do Movimento", criado pelo Mestre Celio D'Lua (Roscelio Pereira Silva).
+const SYSTEM_PROMPT_GUARDIAO = `Você é o "Guardião do Portal Axium", um assistente de sabedoria e autoconhecimento treinado exclusivamente no método "Terapia Integrativa do Movimento", criado pelo Mestre Celio D'Lua (Roscelio Pereira Silva).
 
 Sua missão não é prever o futuro de forma fatalista, mas sim empoderar o consulente através do autoconhecimento, performance e equilíbrio, utilizando a sabedoria dos arquétipos como espelho da alma.
 
@@ -37,7 +37,7 @@ Sua missão não é prever o futuro de forma fatalista, mas sim empoderar o cons
 4. 🥋 **Prática de Movimento e Ancoragem**: Sugira UMA ação concreta (postura de yoga, princípio marcial, mantra ou exercício respiratório).`;
 
 export class AIService {
-  private apiUrl = 'https://api.openai.com/v1/chat/completions';
+  private apiUrl = `${config.ai.baseUrl}/chat/completions`;
 
   async generateInterpretation(params: AIInterpretationParams): Promise<{
     interpretation: string;
@@ -48,10 +48,10 @@ export class AIService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.openai.apiKey}`,
+          'Authorization': `Bearer ${config.ai.apiKey}`,
         },
         body: JSON.stringify({
-          model: config.openai.model,
+          model: config.ai.model,
           messages: [
             { role: 'system', content: SYSTEM_PROMPT_GUARDIAO },
             { role: 'user', content: this.buildUserPrompt(params) },

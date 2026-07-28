@@ -24,7 +24,7 @@ export class WhatsAppService {
 
   async sendDossierLink(params: SendMessageParams): Promise<boolean> {
     try {
-      const message = `🧿 *Axis Mundi — Seu Dossiê Está Pronto!* 🧿\n\n${params.message}\n\n🔮 *Acesse aqui:* ${params.mediaUrl}\n\n_O conhecimento é a ponte entre os mundos._ 🌌`;
+      const message = `🧿 *Portal Axium — Seu Dossiê Está Pronto!* 🧿\n\n${params.message}\n\n🔮 *Acesse aqui:* ${params.mediaUrl}\n\n_O conhecimento é a ponte entre os mundos._ 🌌`;
 
       await this.api.post('/message/send', {
         number: params.phone,

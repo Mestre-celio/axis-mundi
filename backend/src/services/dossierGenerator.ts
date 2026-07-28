@@ -90,8 +90,8 @@ export class DossierGenerator {
         layout: 'portrait',
         margins: { top: 40, bottom: 40, left: 50, right: 50 },
         info: {
-          Title: `Dossiê Axis Mundi - ${params.reading.oracles?.name || 'Oráculo'}`,
-          Author: 'Axis Mundi',
+          Title: `Dossiê Portal Axium - ${params.reading.oracles?.name || 'Oráculo'}`,
+          Author: 'Portal Axium',
           Subject: 'Dossiê Astrológico-Arquetípico',
         },
       });
@@ -104,7 +104,7 @@ export class DossierGenerator {
 
       doc.fontSize(42)
         .fillColor('#d4af37')
-        .text('AXIS MUNDI', 0, 120, { align: 'center' });
+        .text('PORTAL AXIUM', 0, 120, { align: 'center' });
 
       doc.fontSize(14)
         .fillColor('#c0c0c0')
@@ -187,7 +187,7 @@ export class DossierGenerator {
       doc.fontSize(8)
         .fillColor('#999999')
         .text(
-          `Gerado em ${new Date().toLocaleString('pt-BR')} • Axis Mundi • ID: ${params.docId.slice(0, 12)}`,
+          `Gerado em ${new Date().toLocaleString('pt-BR')} • Portal Axium • ID: ${params.docId.slice(0, 12)}`,
           doc.page.width - 100,
           doc.page.height - 40,
           { align: 'center' }
