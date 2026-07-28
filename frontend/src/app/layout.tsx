@@ -6,8 +6,29 @@ import { Stars } from '@/components/layout/Stars';
 import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
-  title: 'Portal Axium — Oráculo e Autoconhecimento',
-  description: 'Onde a sabedoria ancestral encontra a tecnologia. Tarot, Ifá, Runas, I Ching e Orixás em um só templo digital.',
+  title: 'Portal Axium | O Eixo Sagrado do Seu Autoconhecimento',
+  description: 'Descubra a trama sagrada da sua existência. Mapa Astral, Numerologia e Ressonância Ancestral unificados em um Dossiê Pessoal de alta precisão.',
+  openGraph: {
+    title: 'Portal Axium | O Eixo Sagrado do Seu Autoconhecimento',
+    description: 'Consulte os astros, os números e a sabedoria ancestral. Gere seu Dossiê Pessoal completo agora.',
+    url: 'https://axis-mundi-five.vercel.app',
+    siteName: 'Portal Axium',
+    images: [
+      {
+        url: 'https://axis-mundi-five.vercel.app/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Emblema Lótus Cósmica dourada sobre fundo Azul Meia-Noite - Portal Axium',
+      },
+    ],
+    locale: 'pt_BR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Portal Axium',
+    description: 'O eixo do mundo onde o céu encontra a terra. Sua jornada oracular começa aqui.',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
