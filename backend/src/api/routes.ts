@@ -30,5 +30,6 @@ routes.get('/orders', orderController.list);
 routes.get('/orders/:id', orderController.getById);
 
 routes.use('/dossiers', requireAuth);
+routes.get('/dossiers/status', dossierController.status);
 routes.post('/dossiers/generate', dossierController.generate);
 routes.get('/dossiers/:id/download', dossierController.download);

@@ -4,6 +4,52 @@ import { AppError } from '../../middleware/errorHandler';
 import { AuthenticatedRequest } from '../../middleware/auth';
 
 export const dossierController = {
+  async status(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const { reading_id } = req.query;
+      if (!reading_id) throw new AppError(400, 'MISSING_FIELD', 'reading_id é obrigatório');
+
+      const { data: doc } = await supabaseAdmin
+        .from('generated_documents')
+        .select('id, status, storage_key, storage_bucket, signed_url, signed_url_expires_at, created_at')
+        .eq('reading_id', reading_id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!doc) {
+        return res.json({
+          success: true,
+          data: { status: 'pending', reading_id },
+        });
+      }
+
+      if (doc.status === 'ready' && doc.storage_key) {
+        const { data: signedUrlData } = await supabaseAdmin
+          .storage
+          .from(doc.storage_bucket)
+          .createSignedUrl(doc.storage_key, 3600);
+
+        return res.json({
+          success: true,
+          data: {
+            status: 'ready',
+            document_id: doc.id,
+            signed_url: signedUrlData?.signedUrl || null,
+            expires_at: new Date(Date.now() + 3600000).toISOString(),
+          },
+        });
+      }
+
+      res.json({
+        success: true,
+        data: { status: doc.status, document_id: doc.id },
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async generate(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const { reading_id } = req.body;

@@ -56,6 +56,8 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ reading_id: readingId }),
     }),
+  getDossierStatus: (readingId: string) =>
+    request<{ status: string; signed_url?: string; document_id?: string }>(`/dossiers/status?reading_id=${readingId}`),
   downloadDossier: (id: string) => request<{ download_url: string }>(`/dossiers/${id}/download`),
 
   getProfile: () => request<Profile>('/profile'),
