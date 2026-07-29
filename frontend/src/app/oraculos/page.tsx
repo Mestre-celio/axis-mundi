@@ -81,23 +81,25 @@ export default function OraculosPage() {
     setModalAberto(true);
 
     try {
-      const res = await fetch(`${API_URL}/oraculo/iniciar`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://axis-mundi-production.up.railway.app/api/v1';
+      if (!apiUrl) throw new Error('Configuração de API ausente.');
+
+      const res = await fetch(`${apiUrl}/oraculo/iniciar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oraculoId: oraculo.id }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.sucesso) {
-          setAbertura(data.abertura);
-          setDisclaimer(data.disclaimer);
-        } else {
-          setErroIniciar(true);
-        }
+      if (!res.ok) throw new Error(`O Eixo retornou status ${res.status}`);
+
+      const data = await res.json();
+      if (data.sucesso) {
+        setAbertura(data.abertura);
+        setDisclaimer(data.disclaimer);
       } else {
         setErroIniciar(true);
       }
-    } catch {
+    } catch (err) {
+      console.error('[Portal Axium] Falha na sintonia:', err);
       setErroIniciar(true);
     } finally {
       setIniciando(false);
@@ -230,9 +232,9 @@ export default function OraculosPage() {
                   </div>
                 )}
                 {erroIniciar && (
-                  <div className="bg-[#040208] border border-[#E5C158]/20 rounded-xl p-3 mb-2">
-                    <p className="text-xs text-slate-400 text-center">
-                      O oráculo está preparado. Deixe seus dados para a leitura.
+                  <div className="bg-[#040208] border border-[#D8B4F8]/20 rounded-xl p-3 mb-2">
+                    <p className="text-xs text-[#D8B4F8] italic text-center leading-relaxed">
+                      &ldquo;Houve uma oscilação momentânea no Eixo. Nossa inteligência está se reconectando às tradições.&rdquo;
                     </p>
                   </div>
                 )}
