@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes shuffle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-20px) rotate(-15deg); }
+  50% { transform: translateY(0) rotate(15deg); }
+  75% { transform: translateY(-10px) rotate(-5deg); }
+}
+
+@keyframes reveal {
+  0% { opacity: 0; transform: scale(0.5) rotateY(180deg); }
+  50% { opacity: 0.5; transform: scale(1.1) rotateY(90deg); }
+  100% { opacity: 1; transform: scale(1) rotateY(0deg); }
+}
+
+.animate-shuffle {
+  animation: shuffle 1.5s ease-in-out infinite;
+}
+
+.animate-reveal {
+  animation: reveal 0.6s ease-out forwards;
+}
+
 @layer base {
   body {
     @apply bg-[#040208] text-gray-200 font-sans antialiased;
