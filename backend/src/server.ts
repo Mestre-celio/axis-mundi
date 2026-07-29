@@ -6,6 +6,7 @@ import { config } from './config';
 import { logger } from './lib/logger';
 import { errorHandler } from './middleware/errorHandler';
 import { routes } from './api/routes';
+import { oracleController } from './api/controllers/oracleController';
 
 process.on('uncaughtException', (err) => {
   console.error('UNCAUGHT EXCEPTION:', err);
@@ -58,6 +59,9 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/v1', routes);
+
+// Rota pública de degustação (caminho usado pelo frontend freemium)
+app.post('/api/oraculo/degustacao-publica', oracleController.degustacao);
 
 app.use(errorHandler);
 

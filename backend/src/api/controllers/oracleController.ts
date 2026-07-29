@@ -84,7 +84,7 @@ Tom poetico, acolhedor e direto.`;
 
       const conteudo = body?.choices?.[0]?.message?.content || 'O Eixo esta em silencio momentaneo.';
 
-      res.json({ success: true, data: { conteudo, oraculo: oraculoId } });
+      res.json({ sucesso: true, resultado: conteudo, oraculo: oraculoId });
     } catch (err) {
       next(err);
     }
