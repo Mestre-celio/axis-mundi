@@ -44,6 +44,21 @@
   .glow-lilac {
     box-shadow: 0 0 30px rgba(216, 180, 248, 0.1);
   }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #0f172a;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #E5C158;
+  }
 }
 
 @layer utilities {
