@@ -15,6 +15,7 @@ interface Oraculo {
 interface ResultadoEstruturado {
   arquetipo: string;
   elemento: string;
+  abertura: string;
   analise: {
     forca: string;
     desafio: string;
@@ -63,11 +64,32 @@ export default function OraculosPage() {
   const [dataNascimento, setDataNascimento] = useState('');
   const [carregando, setCarregando] = useState(false);
   const [resultado, setResultado] = useState<ResultadoEstruturado | null>(null);
+  const [abertura, setAbertura] = useState<string | null>(null);
+  const [disclaimer, setDisclaimer] = useState<string | null>(null);
 
-  const abrirDegustacao = (oraculo: Oraculo) => {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://axis-mundi-production.up.railway.app/api/v1';
+
+  const abrirDegustacao = async (oraculo: Oraculo) => {
     setOraculoAtivo(oraculo);
     setResultado(null);
+    setAbertura(null);
+    setDisclaimer(null);
     setModalAberto(true);
+
+    try {
+      const res = await fetch(`${API_URL}/oraculo/iniciar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oraculoId: oraculo.id }),
+      });
+      const data = await res.json();
+      if (data.sucesso) {
+        setAbertura(data.abertura);
+        setDisclaimer(data.disclaimer);
+      }
+    } catch {
+      setAbertura(null);
+    }
   };
 
   const handleGerarDegustacao = async (e: React.FormEvent) => {
@@ -92,6 +114,7 @@ export default function OraculosPage() {
         setResultado({
           arquetipo: data.arquetipo,
           elemento: data.elemento,
+          abertura: data.abertura || abertura || '',
           analise: {
             forca: data.analise?.forca || 'Intuição aguçada.',
             desafio: data.analise?.desafio || 'Ruído externo.',
@@ -103,6 +126,7 @@ export default function OraculosPage() {
         setResultado({
           arquetipo: 'Arcano da Sincronicidade',
           elemento: 'Éter',
+          abertura: abertura || '',
           analise: {
             forca: 'Sua energia atual revela alinhamento com a tradição.',
             desafio: 'Busque o equilíbrio nos passos diários.',
@@ -115,6 +139,7 @@ export default function OraculosPage() {
       setResultado({
         arquetipo: 'Arcano da Sincronicidade',
         elemento: 'Éter',
+        abertura: abertura || '',
         analise: {
           forca: 'Conexão estabelecida com sucesso.',
           desafio: 'Abertura de caminhos em andamento.',
@@ -176,10 +201,27 @@ export default function OraculosPage() {
               ✕
             </button>
 
-            {!resultado ? (
+            {!resultado && !abertura && !carregando && (
+              <div className="py-8 text-center">
+                <div className="w-8 h-8 border-2 border-[#E5C158] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                <p className="text-xs text-slate-400">Sintonizando com o Eixo...</p>
+              </div>
+            )}
+
+            {!resultado && abertura && (
               <form onSubmit={handleGerarDegustacao} className="space-y-4">
+                <div className="bg-[#040208] border border-[#D8B4F8]/20 rounded-xl p-4 mb-2">
+                  <p className="text-xs text-[#D8B4F8] italic leading-relaxed">
+                    &ldquo;{abertura}&rdquo;
+                  </p>
+                </div>
+
                 <h3 className="text-2xl font-serif text-[#E5C158] mb-1">Degustação - {oraculoAtivo?.nome}</h3>
                 <p className="text-xs text-slate-300 mb-4">Insira seus dados para receber sua síntese superficial sem custo.</p>
+
+                {disclaimer && (
+                  <p className="text-[10px] text-slate-500 italic mb-2">{disclaimer}</p>
+                )}
 
                 <div>
                   <label className="block text-xs text-[#E5C158] mb-1 uppercase tracking-wider">Nome Completo</label>
@@ -217,10 +259,16 @@ export default function OraculosPage() {
                   ) : 'Revelar Síntese Gratuita'}
                 </button>
               </form>
-            ) : (
-              /* Mini-Dossiê Estruturado */
+            )}
+
+            {resultado && (
               <div className="space-y-4 text-left">
-                {/* Cabeçalho do Arquétipo */}
+                <div className="bg-[#040208] border border-[#D8B4F8]/20 rounded-xl p-4 mb-1">
+                  <p className="text-xs text-[#D8B4F8] italic leading-relaxed">
+                    &ldquo;{resultado.abertura || abertura}&rdquo;
+                  </p>
+                </div>
+
                 <div className="bg-[#040208] border border-[#E5C158]/40 p-4 rounded-xl flex items-center justify-between shadow-lg shadow-[#E5C158]/5">
                   <div>
                     <span className="text-[10px] text-[#D8B4F8] uppercase tracking-widest font-bold block mb-1">Arquétipo Revelado</span>
@@ -231,7 +279,6 @@ export default function OraculosPage() {
                   </span>
                 </div>
 
-                {/* Grid de Diagnóstico Rápido */}
                 <div className="bg-[#040208] border border-[#E5C158]/20 p-4 rounded-xl space-y-3 text-sm">
                   <div className="flex gap-3">
                     <span className="text-[#E5C158] mt-0.5">✦</span>
@@ -262,7 +309,6 @@ export default function OraculosPage() {
                   </div>
                 </div>
 
-                {/* Gancho Premium */}
                 <div className="bg-gradient-to-r from-[#D8B4F8]/10 to-[#D8B4F8]/5 border border-[#D8B4F8]/30 p-4 rounded-lg text-center relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#D8B4F8] to-transparent opacity-50" />
                   <p className="text-xs text-[#D8B4F8] italic leading-relaxed font-light">
@@ -270,7 +316,10 @@ export default function OraculosPage() {
                   </p>
                 </div>
 
-                {/* Botão de Conversão */}
+                {disclaimer && (
+                  <p className="text-[10px] text-slate-500 italic text-center">{disclaimer}</p>
+                )}
+
                 <button
                   onClick={() => window.location.href = `/checkout?oraculo=${oraculoAtivo?.id}`}
                   className="w-full py-4 bg-gradient-to-r from-[#E5C158] to-[#F3E5AB] text-[#040208] font-bold text-xs uppercase tracking-widest rounded-xl hover:shadow-[0_0_25px_rgba(229,193,88,0.4)] transition-all transform hover:scale-[1.02] active:scale-[0.98]"

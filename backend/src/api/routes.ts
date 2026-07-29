@@ -14,6 +14,7 @@ export const routes = Router();
 routes.get('/oracles', oracleController.list);
 routes.get('/oracles/:slug', oracleController.getBySlug);
 routes.post('/degustacao', oracleController.degustacao);
+routes.post('/oraculo/iniciar', oracleController.iniciarChat);
 routes.post('/webhooks/asaas', webhookController.handleAsaas);
 
 // --- Marketplace público ---
