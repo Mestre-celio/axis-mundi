@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { OracleResultModal } from '@/components/oracle/OracleResultModal';
 
 interface Oraculo {
   id: string;
@@ -193,7 +194,10 @@ export default function OraculosPage() {
               </button>
 
               <button
-                onClick={() => window.location.href = `/checkout?oraculo=${item.id}`}
+                onClick={() => {
+                  const target = `/checkout?oraculo=${item.id}`;
+                  window.location.assign(target);
+                }}
                 className="w-full py-2.5 bg-gradient-to-r from-[#E5C158] to-[#F3E5AB] text-[#040208] text-xs font-bold uppercase tracking-widest rounded-lg hover:opacity-90 transition-all flex items-center justify-center gap-2"
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
@@ -343,12 +347,9 @@ export default function OraculosPage() {
                   <p className="text-[10px] text-slate-500 italic text-center">{disclaimer}</p>
                 )}
 
-                <button
-                  onClick={() => window.location.href = `/checkout?oraculo=${oraculoAtivo?.id}`}
-                  className="w-full py-4 bg-gradient-to-r from-[#E5C158] to-[#F3E5AB] text-[#040208] font-bold text-xs uppercase tracking-widest rounded-xl hover:shadow-[0_0_25px_rgba(229,193,88,0.4)] transition-all transform hover:scale-[1.02] active:scale-[0.98]"
-                >
+                <OracleResultModal oraculoId={oraculoAtivo?.id} className="py-4 text-xs uppercase tracking-widest rounded-xl hover:shadow-[0_0_25px_rgba(229,193,88,0.4)] transition-all transform hover:scale-[1.02] active:scale-[0.98]">
                   Desbloquear Dossiê Completo + Atendimento
-                </button>
+                </OracleResultModal>
               </div>
             )}
           </div>

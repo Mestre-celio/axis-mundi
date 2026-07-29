@@ -10,6 +10,8 @@ import { useAuth } from '@/lib/auth';
 import toast from 'react-hot-toast';
 import type { Oracle } from '@/types';
 
+const VALID_ORACLES = ['tarot', 'ifa', 'runas', 'iching', 'orixas'];
+
 export default function OraclePage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
@@ -18,11 +20,31 @@ export default function OraclePage() {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [routeError, setRouteError] = useState(false);
 
   useEffect(() => {
-    api.getOracle(slug)
-      .then(setOracle)
-      .catch(() => router.push('/oraculos'))
+    if (!slug) {
+      setLoading(false);
+      setRouteError(true);
+      return;
+    }
+
+    const normalizedSlug = slug.toLowerCase();
+    if (!VALID_ORACLES.includes(normalizedSlug)) {
+      setLoading(false);
+      setRouteError(true);
+      return;
+    }
+
+    api.getOracle(normalizedSlug)
+      .then((data) => {
+        setOracle(data);
+        setRouteError(false);
+      })
+      .catch(() => {
+        setRouteError(true);
+        router.push('/oraculos');
+      })
       .finally(() => setLoading(false));
   }, [slug, router]);
 
@@ -61,6 +83,18 @@ export default function OraclePage() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (routeError) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-display text-gold-500 mb-3">Rota não disponível</h1>
+          <p className="text-gray-400 mb-6">Esta tradição ainda não está disponível para consulta neste momento.</p>
+          <Button onClick={() => router.push('/oraculos')}>Voltar aos Oráculos</Button>
+        </div>
       </div>
     );
   }

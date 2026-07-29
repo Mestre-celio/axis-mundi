@@ -1,5 +1,7 @@
 'use client';
 
+import { OracleResultModal } from '@/components/oracle/OracleResultModal';
+
 interface ModalConversaoProps {
   oraculoId: string;
   oraculoNome: string;
@@ -26,12 +28,9 @@ export function ModalConversaoFreemium({ oraculoId, oraculoNome, conteudo, onClo
           <p className="text-xs text-[#D8B4F8] mb-3">
             Quer o Dossiê completo em PDF com mapa astral, Odus e orientação com Sacerdote?
           </p>
-          <button
-            onClick={() => { window.location.href = `/checkout?oraculo=${oraculoId}`; }}
-            className="w-full py-3 bg-gradient-to-r from-[#E5C158] to-[#F3E5AB] text-[#040208] font-bold text-xs uppercase tracking-widest rounded hover:shadow-lg hover:shadow-[#E5C158]/20 transition-all"
-          >
+          <OracleResultModal oraculoId={oraculoId} className="py-3 text-xs uppercase tracking-widest rounded hover:shadow-lg hover:shadow-[#E5C158]/20 transition-all">
             Desbloquear Leitura Profunda + Dossiê
-          </button>
+          </OracleResultModal>
           <p className="text-[10px] text-slate-500 mt-3 italic">
             Mais de 1.200 buscadores já encontraram clareza através desta leitura profunda.
           </p>
