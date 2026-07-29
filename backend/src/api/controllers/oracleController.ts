@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabaseAdmin } from '../../lib/supabase';
 import { AppError } from '../../middleware/errorHandler';
-import { logger } from '../../lib/logger';
-import { config } from '../../config';
+import Groq from 'groq-sdk';
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY || process.env.AI_API_KEY || '' });
 
 export const oracleController = {
   async list(_req: Request, res: Response, next: NextFunction) {
@@ -44,49 +45,51 @@ export const oracleController = {
     try {
       const { oraculoId, nome, dataNascimento } = req.body;
       if (!oraculoId || !nome || !dataNascimento) {
-        throw new AppError(400, 'MISSING_FIELD', 'oraculoId, nome e dataNascimento sao obrigatorios');
+        return res.status(400).json({ erro: 'Dados incompletos para sintonia.' });
       }
 
-      const apiUrl = `${config.ai.baseUrl}/chat/completions`;
+      const systemPrompt = `Você é o Sábio do Portal Axium. Gere uma degustação oracular MARCANTE e ESTRUTURADA para o oráculo '${oraculoId}'.
+Consulente: ${nome}, Nascido em: ${dataNascimento}.
 
-      const systemPrompt = `Voce e o Sabio do Portal Axium.
-Sua tarefa e fornecer uma DEGUSTACAO GRATUITA E SUPERFICIAL baseada no oraculo '${oraculoId}' para ${nome}, nascido em ${dataNascimento}.
+Responda ESTRITAMENTE em formato JSON válido (sem markdown, sem crases, apenas o objeto):
+{
+  "arquetipo": "Nome específico do Arcano/Odu/Runa/Orixá regente calculado",
+  "elemento": "Fogo | Terra | Ar | Água",
+  "analise": {
+    "forca": "Sua principal virtude ativa neste momento (máx. 12 palavras)",
+    "desafio": "O obstáculo invisível que você enfrenta hoje (máx. 12 palavras)",
+    "conselho": "Orientação direta e prática para as próximas 24h (máx. 12 palavras)"
+  },
+  "ganchoPremium": "Uma revelação instigante sobre um bloqueio ancestral ou oportunidade futura que só o Dossiê Completo revela. Crie curiosidade genuína."
+}`;
 
-Regras estritas:
-1. Identifique o elemento/arquétipo principal (no Tarot, o Arcano de Nascimento; no Ifa, uma impressao de Odu; nas Runas, a Runa regente; no I Ching, o Hexagrama base; nos Orixas, o Orixa de cabeca/regencia preliminar).
-2. Forneca uma sintese superficial de no maximo 2 paragrafos sobre a personalidade e a energia atual.
-3. NAO forneca aconselhamento profundo, rituais ou orientacoes complexas.
-4. Finalize com uma frase convidando a buscar o Dossie Completo.
-Tom poetico, acolhedor e direto.`;
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.ai.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: config.ai.model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: `Realizar leitura rapida para ${nome}, nascido em ${dataNascimento}.` },
-          ],
-          temperature: 0.6,
-          max_tokens: 220,
-        }),
+      const completion = await groq.chat.completions.create({
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: 'Realizar leitura rápida estruturada.' },
+        ],
+        model: process.env.AI_MODEL || 'llama-3.3-70b-versatile',
+        temperature: 0.6,
+        max_tokens: 350,
+        response_format: { type: 'json_object' },
       });
 
-      const body: any = await response.json();
-
-      if (!response.ok) {
-        throw new AppError(502, 'AI_ERROR', body?.error?.message || 'Erro na API de IA');
+      let resultado: any;
+      try {
+        resultado = JSON.parse(completion.choices[0]?.message?.content || '{}');
+      } catch (e) {
+        resultado = {
+          arquetipo: 'Arcano da Sincronicidade',
+          elemento: 'Éter',
+          analise: { forca: 'Intuição aguçada.', desafio: 'Ruído externo.', conselho: 'Silencie a mente.' },
+          ganchoPremium: 'Seu mapa astral completo revela uma convergência rara neste ciclo lunar.',
+        };
       }
 
-      const conteudo = body?.choices?.[0]?.message?.content || 'O Eixo esta em silencio momentaneo.';
-
-      res.json({ sucesso: true, resultado: conteudo, oraculo: oraculoId });
-    } catch (err) {
-      next(err);
+      res.json({ sucesso: true, ...resultado });
+    } catch (error) {
+      console.error('Erro na degustação:', error);
+      res.status(500).json({ erro: 'Falha na conexão com o Eixo Oracular.' });
     }
   },
 };
