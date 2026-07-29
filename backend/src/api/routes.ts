@@ -13,6 +13,7 @@ export const routes = Router();
 // --- Rotas públicas ---
 routes.get('/oracles', oracleController.list);
 routes.get('/oracles/:slug', oracleController.getBySlug);
+routes.post('/degustacao', oracleController.degustacao);
 routes.post('/webhooks/asaas', webhookController.handleAsaas);
 
 // --- Marketplace público ---
