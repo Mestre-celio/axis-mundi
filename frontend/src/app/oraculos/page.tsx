@@ -66,6 +66,8 @@ export default function OraculosPage() {
   const [resultado, setResultado] = useState<ResultadoEstruturado | null>(null);
   const [abertura, setAbertura] = useState<string | null>(null);
   const [disclaimer, setDisclaimer] = useState<string | null>(null);
+  const [erroIniciar, setErroIniciar] = useState(false);
+  const [iniciando, setIniciando] = useState(false);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://axis-mundi-production.up.railway.app/api/v1';
 
@@ -74,6 +76,8 @@ export default function OraculosPage() {
     setResultado(null);
     setAbertura(null);
     setDisclaimer(null);
+    setErroIniciar(false);
+    setIniciando(true);
     setModalAberto(true);
 
     try {
@@ -82,13 +86,21 @@ export default function OraculosPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oraculoId: oraculo.id }),
       });
-      const data = await res.json();
-      if (data.sucesso) {
-        setAbertura(data.abertura);
-        setDisclaimer(data.disclaimer);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.sucesso) {
+          setAbertura(data.abertura);
+          setDisclaimer(data.disclaimer);
+        } else {
+          setErroIniciar(true);
+        }
+      } else {
+        setErroIniciar(true);
       }
     } catch {
-      setAbertura(null);
+      setErroIniciar(true);
+    } finally {
+      setIniciando(false);
     }
   };
 
@@ -201,20 +213,29 @@ export default function OraculosPage() {
               ✕
             </button>
 
-            {!resultado && !abertura && !carregando && (
+            {!resultado && iniciando && (
               <div className="py-8 text-center">
                 <div className="w-8 h-8 border-2 border-[#E5C158] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                 <p className="text-xs text-slate-400">Sintonizando com o Eixo...</p>
               </div>
             )}
 
-            {!resultado && abertura && (
+            {!resultado && (abertura || erroIniciar) && !iniciando && (
               <form onSubmit={handleGerarDegustacao} className="space-y-4">
-                <div className="bg-[#040208] border border-[#D8B4F8]/20 rounded-xl p-4 mb-2">
-                  <p className="text-xs text-[#D8B4F8] italic leading-relaxed">
-                    &ldquo;{abertura}&rdquo;
-                  </p>
-                </div>
+                {abertura && (
+                  <div className="bg-[#040208] border border-[#D8B4F8]/20 rounded-xl p-4 mb-2">
+                    <p className="text-xs text-[#D8B4F8] italic leading-relaxed">
+                      &ldquo;{abertura}&rdquo;
+                    </p>
+                  </div>
+                )}
+                {erroIniciar && (
+                  <div className="bg-[#040208] border border-[#E5C158]/20 rounded-xl p-3 mb-2">
+                    <p className="text-xs text-slate-400 text-center">
+                      O oráculo está preparado. Deixe seus dados para a leitura.
+                    </p>
+                  </div>
+                )}
 
                 <h3 className="text-2xl font-serif text-[#E5C158] mb-1">Degustação - {oraculoAtivo?.nome}</h3>
                 <p className="text-xs text-slate-300 mb-4">Insira seus dados para receber sua síntese superficial sem custo.</p>
