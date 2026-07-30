@@ -50,34 +50,49 @@ export async function POST(request: NextRequest) {
         // QR code fetch não crítico
       }
 
-      // Salva pedido no Supabase
-      const { data: userProfile } = await getSupabaseAdmin()
+      // Busca ou cria perfil
+      const { data: existingProfile } = await getSupabaseAdmin()
         .from('profiles')
         .select('id')
         .eq('email', email)
         .single();
 
-      await getSupabaseAdmin().from('orders').insert({
-        user_id: userProfile?.id || null,
-        customer_name: nome,
-        customer_email: email,
-        customer_phone: whatsapp,
-        amount: valor,
-        status: 'pending',
-        asaas_id: payment.id,
-        pix_copy_paste: pixCode,
-        asaas_payment_id: payment.id,
-        metadata: { oracle, sacerdote, dataNascimento: body.dataNascimento },
-      });
+      let userId = existingProfile?.id;
+      if (!userId) {
+        const { data: newProfile } = await getSupabaseAdmin()
+          .from('profiles')
+          .insert({ email, display_name: nome, phone: whatsapp })
+          .select('id')
+          .single();
+        userId = newProfile?.id;
+      }
+
+      // Salva pedido no Supabase com ID do Asaas como externalReference
+      const { data: order } = await getSupabaseAdmin()
+        .from('orders')
+        .insert({
+          user_id: userId || null,
+          customer_name: nome,
+          customer_email: email,
+          customer_phone: whatsapp,
+          amount: valor,
+          status: 'pending',
+          asaas_id: payment.id,
+          pix_copy_paste: pixCode,
+          metadata: { oracle, sacerdote, dataNascimento, horaNascimento: body.horaNascimento, localNascimento: body.localNascimento },
+        })
+        .select('id')
+        .single();
 
       return NextResponse.json({
         success: true,
         pixCode,
         orderId: payment.id,
+        externalReference: order?.id,
       });
     }
 
-    // Fallback: mock PIX se não houver chave Asaas
+    // Fallback mock
     const mockPix = '00020126580014br.gov.bcb.pix0136' + Math.random().toString(36).substring(2, 15);
 
     await getSupabaseAdmin().from('orders').insert({
@@ -87,7 +102,7 @@ export async function POST(request: NextRequest) {
       amount: valor,
       status: 'pending',
       pix_copy_paste: mockPix,
-      metadata: { oracle, sacerdote, dataNascimento: body.dataNascimento },
+      metadata: { oracle, sacerdote, dataNascimento },
     });
 
     return NextResponse.json({
