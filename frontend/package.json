@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-email/components": "^1.0.12",
     "@react-email/tailwind": "^2.0.7",
+    "@react-pdf/renderer": "^4.5.1",
     "@supabase/ssr": "^0.1.0",
     "@supabase/supabase-js": "^2.39.0",
     "clsx": "^2.1.0",
