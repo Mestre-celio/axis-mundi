@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import OracleRenderer from '@/components/oracles/OracleRenderer';
 
-const VALID_ORACLES = ['tarot', 'ifa', 'runas', 'iching', 'orixas'];
+const VALID_ORACLES = ['tarot', 'ifa', 'runas', 'iching', 'orixas', 'astrologia', 'numerologia'];
 
 const ORACLE_INFO: Record<string, { nome: string; icone: string; desc: string }> = {
   tarot: { nome: 'Tarot', icone: '\uD83C\uDCC3', desc: 'Espelho da alma e arquétipos universais revelados através dos Arcanos.' },
@@ -12,6 +12,8 @@ const ORACLE_INFO: Record<string, { nome: string; icone: string; desc: string }>
   runas: { nome: 'Runas', icone: '\u16B1', desc: 'Forças elementais e proteção dos antigos através dos símbolos nórdicos.' },
   iching: { nome: 'I Ching', icone: '\u262F\uFE0F', desc: 'Livro das mutações para decisões sábias e visão estratégica.' },
   orixas: { nome: 'Orixás', icone: '\uD83C\uDF0A', desc: 'Forças da natureza e regências espirituais da tradição afro-brasileira.' },
+  astrologia: { nome: 'Astrologia', icone: '\u2728', desc: 'Esfera armilar dourada com constelações e órbitas planetárias luminosas.' },
+  numerologia: { nome: 'Numerologia', icone: '\uD83D\uDD22', desc: 'Círculos concêntricos de geometria sagrada com números arquetípicos.' },
 };
 
 export default function OraclePage() {

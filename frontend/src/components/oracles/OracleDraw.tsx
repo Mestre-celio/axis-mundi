@@ -28,6 +28,18 @@ const DECK_BY_TYPE: Record<string, string[]> = {
     'Exu', 'Ogum', 'Xangô', 'Iemanjá', 'Oxóssi', 'Oxum', 'Iansã', 'Obaluaiê',
     'Nanã', 'Oxalá', 'Logunedé', 'Ewá', 'Ossaim', 'Ibeji', 'Oxumare',
   ],
+  astrologia: [
+    'Sol em Leão', 'Lua em Câncer', 'Mercúrio Retrógrado', 'Vênus em Libra',
+    'Marte em Áries', 'Júpiter em Sagitário', 'Saturno em Capricórnio', 'Urano em Aquário',
+    'Netuno em Peixes', 'Plutão em Escorpião', 'Lua Nova', 'Lua Cheia',
+    'Eclipse Solar', 'Eclipse Lunar', 'Mercúrio em Gêmeos',
+  ],
+  numerologia: [
+    'Caminho de Vida 1', 'Caminho de Vida 2', 'Caminho de Vida 3', 'Caminho de Vida 4',
+    'Caminho de Vida 5', 'Caminho de Vida 6', 'Caminho de Vida 7', 'Caminho de Vida 8',
+    'Caminho de Vida 9', 'Número de Expressão', 'Número da Alma', 'Número de Destino',
+    'Ano Pessoal', 'Mês Pessoal', 'Dia Pessoal',
+  ],
 };
 
 const TAROT_EMOJI: Record<string, string> = {
