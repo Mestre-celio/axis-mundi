@@ -12,24 +12,41 @@ const oracles = [
 export default function Home() {
   return (
     <div className="relative">
-      <section className="min-h-[90vh] flex items-center justify-center px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1F0B38_0%,#040208_70%)]" />
+      <section className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,#3A0A6B_0%,#1F0B38_40%,#040208_100%)]" />
+
         <div className="text-center max-w-4xl mx-auto relative z-10">
-          <div className="mb-8">
-            <span className="font-display text-xs tracking-[0.35em] text-[#D8B4F8] uppercase">
+          <div className="mb-4">
+            <span className="font-display text-xs tracking-[0.35em] text-[#DCC698] uppercase">
               Filosofia &amp; Arquétipos Cósmicos
             </span>
           </div>
 
-          <div className="flex justify-center mb-6">
-            <Emblem />
+          <div className="flex justify-center mb-8 relative">
+            <div
+              className="absolute top-1/2 left-1/2 w-[280px] md:w-[400px] h-[280px] md:h-[400px] rounded-full"
+              style={{
+                background: 'radial-gradient(circle, rgba(229,193,88,0.35) 0%, rgba(76,11,139,0) 70%)',
+                filter: 'blur(30px)',
+                animation: 'portalPulse 4s ease-in-out infinite alternate',
+              }}
+            />
+            <div className="relative w-full max-w-[320px] md:max-w-[480px]">
+              <Emblem />
+            </div>
           </div>
 
-          <h1 className="font-display text-5xl md:text-7xl uppercase tracking-[0.35em] mb-6 text-gold-gradient">
+          <h1
+            className="font-display text-5xl md:text-7xl uppercase tracking-[0.35em] mb-6"
+            style={{
+              color: '#E5C158',
+              textShadow: '0 0 20px rgba(229,193,88,0.5), 0 0 60px rgba(229,193,88,0.2)',
+            }}
+          >
             PORTAL AXIUM
           </h1>
 
-          <p className="text-sm tracking-[0.45em] text-[#D8B4F8] uppercase mb-4 opacity-90 font-light">
+          <p className="text-sm tracking-[0.45em] text-[#DCC698] uppercase mb-6 opacity-90 font-light">
             O eixo do mundo onde o céu encontra a terra
           </p>
 
@@ -38,20 +55,18 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/oraculos"
-              className="px-10 py-3 rounded font-medium text-sm tracking-wider uppercase transition-all duration-300"
-              style={{
-                background: '#E5C158',
-                color: '#040208',
-                boxShadow: '0 0 20px rgba(229, 193, 88, 0.3)',
-              }}
+              className="px-10 py-3.5 rounded font-medium text-sm tracking-wider uppercase transition-all duration-300 bg-[#E5C158] text-[#090216] shadow-[0_0_25px_rgba(229,193,88,0.4)] hover:bg-[#FFF3A3] hover:shadow-[0_0_40px_rgba(229,193,88,0.7)]"
             >
-              Explorar Oráculos
+              Consultar Oráculo
             </Link>
             <Link
-              href="/register"
-              className="px-10 py-3 rounded font-medium text-sm tracking-wider uppercase transition-all duration-300 border border-[#E5C158]/30 text-[#E5C158] hover:bg-[#E5C158]/10"
+              href="/dashboard"
+              className="px-10 py-3.5 rounded font-medium text-sm tracking-wider uppercase transition-all duration-300 border border-[#E5C158]/40 text-[#E5C158] hover:bg-[#E5C158]/10"
+              style={{
+                textShadow: '0 0 10px rgba(229,193,88,0.3)',
+              }}
             >
-              Criar Conta
+              Entrar no Dashboard
             </Link>
           </div>
         </div>
