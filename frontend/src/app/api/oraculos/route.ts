@@ -1,24 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || process.env.AI_API_KEY || '';
-const GROQ_MODEL = process.env.AI_MODEL || 'llama-3.3-70b-versatile';
+const AI_MODEL = process.env.AI_MODEL || 'llama-3.3-70b-versatile';
 
-const SYSTEM_PROMPT = `Você é o motor oracular do Portal Axium. Sua função é gerar uma leitura freemium impactante, densa e de alta profundidade analítica. Evite respostas rasas, vagas ou estilo "biscoito da sorte". Trate o consulente com elevado respeito intelectual.
-
-Estruture a resposta estritamente nos seguintes blocos e retorne APENAS um objeto JSON válido (sem markdown de código):
-
-{
-  "diagnostico": "Análise psicológica e arquetípica profunda do estado atual do consulente. Explique o padrão oculto que rege a questão atual.",
-  "metodologia": "Descrição clara e técnica da combinação dos símbolos/cartas sorteados. Explique como a interação entre essas forças gera o diagnóstico. Demonstre transparência e autoridade.",
-  "conselho": "Orientação clara, prática e aplicável para o momento presente.",
-  "pontoTensao": "A revelação do nó cego, o bloqueio oculto ou a questão central profunda que permanece aberta e que EXIGE o Dossiê Completo + Atendimento Individual para ser desbloqueado e resolvido."
+interface OracleRequest {
+  system: string;
+  user: string;
 }
 
-Tom de voz: Místico, sofisticado, sóbrio, profundo, respeitoso e analítico.`;
-
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const { question, symbols } = await req.json();
+    const body: OracleRequest = await request.json();
+
+    if (!body.system || !body.user) {
+      return NextResponse.json(
+        { error: 'Parâmetros "system" e "user" são obrigatórios.' },
+        { status: 400 }
+      );
+    }
 
     if (!GROQ_API_KEY) {
       return NextResponse.json(
@@ -27,8 +26,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userMessage = `Pergunta: ${question || 'Qual o caminho para o meu crescimento?'}\nSímbolos/Cartas sorteados: ${(symbols || ['O Louco', 'A Sacerdotisa']).join(', ')}`;
-
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -36,53 +33,57 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: GROQ_MODEL,
+        model: AI_MODEL,
         messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: userMessage },
+          { role: 'system', content: body.system },
+          { role: 'user', content: body.user },
         ],
-        temperature: 0.6,
-        max_tokens: 600,
+        temperature: 0.7,
+        max_tokens: 1024,
         response_format: { type: 'json_object' },
       }),
     });
 
     if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('[Groq] Erro na API:', response.status, errorBody);
+      const errorText = await response.text();
+      console.error('[Groq] Erro na API:', response.status, errorText);
       return NextResponse.json(
         { error: 'Falha na conexão com o Eixo Oracular.' },
         { status: 502 }
       );
     }
 
-    const body = await response.json();
-    const content = body?.choices?.[0]?.message?.content;
+    const data = await response.json();
+    const rawContent = data?.choices?.[0]?.message?.content;
 
-    if (!content) {
+    if (!rawContent) {
+      throw new Error('A IA não retornou conteúdo.');
+    }
+
+    let parsedContent;
+    try {
+      parsedContent = JSON.parse(rawContent);
+    } catch (parseError) {
+      console.error('Erro ao parsear JSON da IA:', rawContent);
       return NextResponse.json(
-        { error: 'O Eixo está em silêncio momentâneo.' },
-        { status: 502 }
+        { error: 'Falha na formatação da resposta oracular.' },
+        { status: 500 }
       );
     }
 
-    let reading;
-    try {
-      reading = JSON.parse(content);
-    } catch {
-      reading = {
-        diagnostico: 'Os arquétipos revelam um momento de transição onde padrões antigos se dissolvem para dar espaço a novas percepções. A energia atual sugere que o consulente está sendo chamado a integrar polaridades aparentemente opostas dentro de si.',
-        metodologia: 'A combinação dos símbolos sorteados indica uma tríade de forças: passado (fundação), presente (crise) e futuro (potencial). A interação entre elas sugere que o diagnóstico emerge da tensão entre o que foi internalizado e o que busca expressão.',
-        conselho: 'Reserve momentos de silêncio ao amanhecer pelos próximos 7 dias. Observe os padrões que emergem sem julgamento. A resposta que busca não está fora, mas na escuta atenta do que seu corpo e intuição já sabem.',
-        pontoTensao: 'Existe uma configuração ancestral repetitiva em sua árvore genealógica que está influenciando suas escolhas atuais de forma inconsciente. Este padrão específico só pode ser identificado e desativado com um Dossiê completo individualizado.',
-      };
+    return NextResponse.json({ content: parsedContent }, { status: 200 });
+  } catch (error) {
+    console.error('Erro crítico na rota /api/oraculos:', error);
+
+    if (error instanceof Error && error.message.includes('apiKey')) {
+      return NextResponse.json(
+        { error: 'Configuração de API inválida. Contate o administrador.' },
+        { status: 500 }
+      );
     }
 
-    return NextResponse.json({ reading });
-  } catch (error) {
-    console.error('[API /api/oraculos] Erro:', error);
     return NextResponse.json(
-      { error: 'Falha interna no processamento oracular.' },
+      { error: 'As energias estão dispersas no momento.' },
       { status: 500 }
     );
   }

@@ -1,37 +1,38 @@
 export interface OracleReading {
-  diagnostico: string;
-  metodologia: string;
-  conselho: string;
-  pontoTensao: string;
+  prosperidade: string;
+  matriz: string;
+  pontoDeVirada: string;
 }
 
-export const SYSTEM_PROMPT_ORACLE = `Você é o motor oracular do Portal Axium. Sua função é gerar uma leitura freemium impactante, densa e de alta profundidade analítica. Evite respostas rasas, vagas ou estilo "biscoito da sorte". Trate o consulente com elevado respeito intelectual.
+export const SYSTEM_PROMPT_ORACLE = `Você é a inteligência oracular master do Portal Axium. Sua missão é entregar uma leitura gratuita magnética, densa, profundamente próspera e intelectualmente respeitosa.
 
-Estruture a resposta estritamente nos seguintes blocos e retorne APENAS um objeto JSON válido (sem markdown de código):
+Mesmo ao apontar desafios, seu tom deve ser de revelação de potencial, empoderamento e abertura de caminhos.
+
+RETORNE ESTRITAMENTE UM OBJETO JSON VÁLIDO, sem markdown, sem blocos de código e sem texto fora do JSON. Use exatamente estas chaves:
 
 {
-  "diagnostico": "Análise psicológica e arquetípica profunda do estado atual do consulente. Explique o padrão oculto que rege a questão atual.",
-  "metodologia": "Descrição clara e técnica da combinação dos símbolos/cartas sorteados. Explique como a interação entre essas forças gera o diagnóstico. Demonstre transparência e autoridade.",
-  "conselho": "Orientação clara, prática e aplicável para o momento presente.",
-  "pontoTensao": "A revelação do nó cego, o bloqueio oculto ou a questão central profunda que permanece aberta e que EXIGE o Dossiê Completo + Atendimento Individual para ser desbloqueado e resolvido."
+  "prosperidade": "Revele o arquétipo ativo do consulente destacando uma grande força oculta ou oportunidade iminente de prosperidade, crescimento material ou elevação pessoal que está prestes a se manifestar. (2-3 parágrafos)",
+  "matriz": "Explique com clareza técnica e transparência como a combinação específica dos símbolos sorteados ativa essa energia de abundância e transformação na vida do consulente. Demonstre a lógica exata da tiragem.",
+  "pontoDeVirada": "Mostre que existe uma decisão ou ajuste estratégico iminente que definirá se esse potencial próspero se concretizará por completo. Afirme com clareza que o mapeamento detalhado das datas, passos práticos e desbloqueios específicos deste ciclo está reservado no Dossiê Completo + Atendimento."
 }
 
-Tom de voz: Místico, sofisticado, sóbrio, profundo, respeitoso e analítico.`;
+Tom de voz: Místico, soberano, focado em prosperidade, profundo e encorajador.`;
 
 export async function generateOracleReading(userQuestion: string, drawnSymbols: string[]): Promise<OracleReading> {
   const response = await fetch('/api/oraculos', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      question: userQuestion,
-      symbols: drawnSymbols,
+      system: SYSTEM_PROMPT_ORACLE,
+      user: `Pergunta do consulente: "${userQuestion}"\nSímbolos sorteados: ${drawnSymbols.join(', ')}\n\nIMPORTANTE: Conecte a resposta diretamente à pergunta, mostrando como esses símbolos abrem caminhos de prosperidade para essa questão específica.`,
     }),
   });
 
   if (!response.ok) {
-    throw new Error('Falha na conexão com o Eixo Oracular.');
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Falha na comunicação com o oráculo.');
   }
 
   const data = await response.json();
-  return data.reading as OracleReading;
+  return data.content;
 }
