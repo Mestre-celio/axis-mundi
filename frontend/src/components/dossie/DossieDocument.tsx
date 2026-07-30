@@ -99,6 +99,7 @@ interface Props {
     aprofundamento?: string;
     rituais?: string;
     datas?: string;
+    avisoLegal?: string;
   };
   sacerdote?: string;
   tokenAcesso: string;
@@ -170,6 +171,13 @@ export default function DossieDocument({ nome, oraculo, symbols, reading, sacerd
             <Text style={styles.bodyText}>{reading.datas}</Text>
           </View>
         )}
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>⚖️ AVISO LEGAL</Text>
+          <Text style={{ ...styles.bodyText, fontSize: 9, fontStyle: 'italic', color: '#94a3b8' }}>
+            {reading.avisoLegal || 'Esta análise é uma ferramenta de autoconhecimento baseada em mitologia comparada e psicologia analítica. Não substitui aconselhamento profissional, médico, psicológico ou jurídico.'}
+          </Text>
+        </View>
 
         <View style={{ marginTop: 16, padding: 8, backgroundColor: 'rgba(229,193,88,0.05)', borderRadius: 4 }}>
           <Text style={{ fontSize: 8, color: '#64748b', textAlign: 'center' }}>

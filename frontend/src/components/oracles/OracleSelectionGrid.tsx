@@ -1,7 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
 const ORACLES = [
   {
     id: 'tarot',
@@ -41,8 +39,6 @@ const ORACLES = [
 ];
 
 export default function OracleSelectionGrid() {
-  const router = useRouter();
-
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-16">
       <div className="text-center mb-16 space-y-4">
@@ -57,9 +53,9 @@ export default function OracleSelectionGrid() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {ORACLES.map((oracle) => (
-          <button
+          <a
             key={oracle.id}
-            onClick={() => router.push(`/oraculos/${oracle.id}`)}
+            href={`/oraculos/${oracle.id}`}
             className={`
               group relative h-96 rounded-2xl overflow-hidden border border-slate-800
               bg-gradient-to-br ${oracle.gradient}
@@ -85,7 +81,7 @@ export default function OracleSelectionGrid() {
                 <span className="ml-2 text-lg">→</span>
               </div>
             </div>
-          </button>
+          </a>
         ))}
       </div>
     </div>

@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
           status: 'pending',
           asaas_id: payment.id,
           pix_copy_paste: pixCode,
-          metadata: { oracle, sacerdote, dataNascimento, horaNascimento: body.horaNascimento, localNascimento: body.localNascimento },
+          metadata: { oracle, sacerdote, sacerdote_nome: sacerdote, sacerdote_email: body.sacerdoteEmail, dataNascimento, horaNascimento: body.horaNascimento, localNascimento: body.localNascimento },
         })
         .select('id')
         .single();
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       amount: valor,
       status: 'pending',
       pix_copy_paste: mockPix,
-      metadata: { oracle, sacerdote, dataNascimento },
+      metadata: { oracle, sacerdote, sacerdote_nome: sacerdote, sacerdote_email: body.sacerdoteEmail, dataNascimento },
     });
 
     return NextResponse.json({
