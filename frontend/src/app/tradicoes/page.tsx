@@ -144,7 +144,7 @@ export default function TradicoesPage() {
             Respeito e Diversidade Espiritual
           </h2>
           <p className="text-slate-300 leading-relaxed text-base md:text-lg mb-6">
-            O Portal Axium e o CTM Cabapuã honram todas as tradições espirituais com profundo respeito.
+            O Portal Axium honra todas as tradições espirituais com profundo respeito.
             Acreditamos que cada caminho é válido e que a diversidade religiosa enriquece a experiência
             humana. Não promovemos sincretismo forçado, mas sim o estudo respeitoso e a compreensão
             das diferentes egregoras.

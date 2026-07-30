@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Nossos Sacerdotes e Terapeutas | CTM Cabapuã',
-  description: 'Conheça os mestres e sacerdotes do Centro de Terapias Místicas Cabapuã. Anos de tradição, sabedoria ancestral e compromisso com sua evolução espiritual.',
+  title: 'Nossos Sacerdotes e Mestres | Portal Axium',
+  description: 'Conheça os mestres e sacerdotes do Portal Axium. Anos de tradição, sabedoria ancestral e compromisso com sua evolução espiritual.',
 };
 
 const SACERDOTES = [
@@ -11,7 +11,7 @@ const SACERDOTES = [
     nome: 'Mestre Axium',
     titulo: 'Fundador e Guardião do Portal',
     especialidades: ['Tarô Evolutivo', 'Astrologia Cármica', 'Numerologia Pitagórica'],
-    bio: 'Com mais de 30 anos de dedicação às artes oraculares, Mestre Axium é o guardião da sabedoria ancestral do CTM Cabapuã. Sua jornada começou nas tradições herméticas europeias e se aprofundou nos mistérios afro-brasileiros, criando uma síntese única de conhecimento.',
+    bio: 'Com mais de 30 anos de dedicação às artes oraculares, Mestre Axium é o guardião da sabedoria ancestral do Portal Axium. Sua jornada começou nas tradições herméticas europeias e se aprofundou nos mistérios afro-brasileiros, criando uma síntese única de conhecimento.',
     icone: '👁️',
   },
   {
@@ -43,7 +43,7 @@ export default function SacerdotesPage() {
             Nossos Sacerdotes e Mestres
           </h1>
           <p className="text-slate-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-            Guardiões da sabedoria ancestral, cada sacerdote do CTM Cabapuã dedicou sua vida ao estudo
+            Guardiões da sabedoria ancestral, cada sacerdote do Portal Axium dedicou sua vida ao estudo
             das artes sagradas. Conheça os mestres que guiarão sua jornada de autoconhecimento e transformação.
           </p>
         </div>

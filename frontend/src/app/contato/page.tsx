@@ -25,7 +25,7 @@ const FAQ_ITEMS = [
   },
   {
     pergunta: 'Vocês atendem presencialmente?',
-    resposta: 'O CTM Cabapuã atende presencialmente em nossa sede em Cabapuã/SP mediante agendamento prévio. Entre em contato para verificar disponibilidade.',
+    resposta: 'O Portal Axium atende presencialmente em nossa sede mediante agendamento prévio. Entre em contato para verificar disponibilidade.',
   },
 ];
 
@@ -199,8 +199,8 @@ export default function ContatoPage() {
                   <div>
                     <p className="text-slate-400 text-sm">Endereço</p>
                     <p className="text-slate-200">
-                      CTM Cabapuã<br />
-                      Cabapuã/SP - Brasil
+                      Portal Axium<br />
+                      Brasil
                     </p>
                   </div>
                 </div>

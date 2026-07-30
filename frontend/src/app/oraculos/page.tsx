@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import OracleSelectionGrid from '@/components/oracles/OracleSelectionGrid';
 
 export const metadata: Metadata = {
-  title: 'Oráculos do Portal Axium | CTM Cabapuã',
+  title: 'Oráculos do Portal Axium',
   description: 'Escolha seu oráculo: Tarô, Runas, Búzios, Astrologia ou Numerologia. Leituras profundas e prósperas para guiar sua jornada.',
 };
 
