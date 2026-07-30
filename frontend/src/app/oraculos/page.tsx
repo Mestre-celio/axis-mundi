@@ -1,196 +1,64 @@
-'use client';
-
-import { useState } from 'react';
+import type { Metadata } from 'next';
 import OracleSelectionGrid from '@/components/oracles/OracleSelectionGrid';
-import { OracleResultModal } from '@/components/oracle/OracleResultModal';
 
-interface ResultadoEstruturado {
-  arquetipo: string;
-  elemento: string;
-  abertura: string;
-  analise: {
-    forca: string;
-    desafio: string;
-    conselho: string;
-  };
-  ganchoPremium: string;
-}
+export const metadata: Metadata = {
+  title: 'Oráculos do Portal Axium | CTM Cabapuã',
+  description: 'Escolha seu oráculo: Tarô, Runas, Búzios, Astrologia ou Numerologia. Leituras profundas e prósperas para guiar sua jornada.',
+};
 
 export default function OraculosPage() {
-  const [oraculoAtivo, setOraculoAtivo] = useState<string | null>(null);
-  const [modalAberto, setModalAberto] = useState(false);
-  const [nome, setNome] = useState('');
-  const [dataNascimento, setDataNascimento] = useState('');
-  const [carregando, setCarregando] = useState(false);
-  const [resultado, setResultado] = useState<ResultadoEstruturado | null>(null);
-  const [abertura, setAbertura] = useState<string | null>(null);
-  const [disclaimer, setDisclaimer] = useState<string | null>(null);
-  const [erroIniciar, setErroIniciar] = useState(false);
-  const [iniciando, setIniciando] = useState(false);
-
-  const abrirDegustacao = async (oraculoId: string, oraculoNome: string) => {
-    setOraculoAtivo(oraculoId);
-    setResultado(null);
-    setAbertura(null);
-    setDisclaimer(null);
-    setErroIniciar(false);
-    setIniciando(true);
-    setModalAberto(true);
-
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://axis-mundi-production.up.railway.app/api/v1';
-      if (!apiUrl) throw new Error('Configuração de API ausente.');
-
-      const res = await fetch(`${apiUrl}/oraculo/iniciar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ oraculoId }),
-      });
-      if (!res.ok) throw new Error(`O Eixo retornou status ${res.status}`);
-
-      const data = await res.json();
-      if (data.sucesso) {
-        setAbertura(data.abertura);
-        setDisclaimer(data.disclaimer);
-      } else {
-        setErroIniciar(true);
-      }
-    } catch (err) {
-      console.error('[Portal Axium] Falha na sintonia:', err);
-      setErroIniciar(true);
-    } finally {
-      setIniciando(false);
-    }
-  };
-
-  const handleGerarDegustacao = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setCarregando(true);
-
-    try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://axis-mundi-production.up.railway.app';
-      const res = await fetch(`${backendUrl}/api/oraculo/degustacao-publica`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ oraculoId: oraculoAtivo, nome, dataNascimento }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.arquetipo) {
-        setResultado({
-          arquetipo: data.arquetipo,
-          elemento: data.elemento,
-          abertura: data.abertura || abertura || '',
-          analise: {
-            forca: data.analise?.forca || 'Intuição aguçada.',
-            desafio: data.analise?.desafio || 'Ruído externo.',
-            conselho: data.analise?.conselho || 'Silencie a mente.',
-          },
-          ganchoPremium: data.ganchoPremium || 'Seu mapa astral completo revela uma convergência rara neste ciclo lunar.',
-        });
-      } else {
-        setResultado({
-          arquetipo: 'Arcano da Sincronicidade', elemento: 'Éter', abertura: abertura || '',
-          analise: { forca: 'Sua energia revela alinhamento.', desafio: 'Busque equilíbrio.', conselho: 'Confie na sabedoria interior.' },
-          ganchoPremium: 'Existe uma revelação mais profunda no Dossiê Completo.',
-        });
-      }
-    } catch {
-      setResultado({
-        arquetipo: 'Arcano da Sincronicidade', elemento: 'Éter', abertura: abertura || '',
-        analise: { forca: 'Conexão estabelecida.', desafio: 'Abertura de caminhos.', conselho: 'Proteção ancestral.' },
-        ganchoPremium: 'O Eixo revela camadas mais profundas em seu Mapa Astral.',
-      });
-    } finally {
-      setCarregando(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-[#040208] text-[#F8F5F2]">
+    <main className="min-h-screen bg-slate-950 text-white">
+      <section className="max-w-4xl mx-auto px-4 py-12 text-center space-y-6">
+        <div className="text-5xl mb-4">🔮</div>
+        <h1 className="text-4xl md:text-5xl font-serif text-[#E5D283]">
+          Portais de Sabedoria
+        </h1>
+        <p className="text-slate-300 text-lg leading-relaxed">
+          Cada oráculo é uma chave única para acessar camadas profundas do seu ser.
+          Selecione aquele que ressoa com sua intuição neste momento e receba uma leitura
+          gratuita com análise arquetípica profunda.
+        </p>
+      </section>
+
       <OracleSelectionGrid />
 
-      {modalAberto && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-[#0B1021] border border-[#E5C158]/40 rounded-2xl p-6 max-w-lg w-full text-[#F8F5F2] relative shadow-2xl shadow-[#E5C158]/10">
-            <button onClick={() => setModalAberto(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-[#E5C158] text-xl font-bold transition-colors">✕</button>
-
-            {!resultado && iniciando && (
-              <div className="py-8 text-center">
-                <div className="w-8 h-8 border-2 border-[#E5C158] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                <p className="text-xs text-slate-400">Sintonizando com o Eixo...</p>
-              </div>
-            )}
-
-            {!resultado && (abertura || erroIniciar) && !iniciando && (
-              <form onSubmit={handleGerarDegustacao} className="space-y-4">
-                {abertura && (
-                  <div className="bg-[#040208] border border-[#D8B4F8]/20 rounded-xl p-4 mb-2">
-                    <p className="text-xs text-[#D8B4F8] italic leading-relaxed">&ldquo;{abertura}&rdquo;</p>
-                  </div>
-                )}
-                {erroIniciar && (
-                  <div className="bg-[#040208] border border-[#D8B4F8]/20 rounded-xl p-3 mb-2">
-                    <p className="text-xs text-[#D8B4F8] italic text-center leading-relaxed">
-                      &ldquo;Houve uma oscilação momentânea no Eixo.&rdquo;
-                    </p>
-                  </div>
-                )}
-                <h3 className="text-2xl font-serif text-[#E5C158] mb-1">Degustação</h3>
-                <p className="text-xs text-slate-300 mb-4">Insira seus dados para receber sua síntese sem custo.</p>
-                {disclaimer && <p className="text-[10px] text-slate-500 italic mb-2">{disclaimer}</p>}
-
-                <div>
-                  <label className="block text-xs text-[#E5C158] mb-1 uppercase tracking-wider">Nome Completo</label>
-                  <input required type="text" value={nome} onChange={e => setNome(e.target.value)} placeholder="Seu nome"
-                    className="w-full bg-[#040208] border border-[#E5C158]/30 rounded-lg p-2.5 text-sm text-white focus:border-[#E5C158] outline-none transition-colors" />
-                </div>
-                <div>
-                  <label className="block text-xs text-[#E5C158] mb-1 uppercase tracking-wider">Data de Nascimento</label>
-                  <input required type="date" value={dataNascimento} onChange={e => setDataNascimento(e.target.value)}
-                    className="w-full bg-[#040208] border border-[#E5C158]/30 rounded-lg p-2.5 text-sm text-white focus:border-[#E5C158] outline-none transition-colors" />
-                </div>
-                <button type="submit" disabled={carregando}
-                  className="w-full py-3 bg-[#E5C158] text-[#040208] font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-[#F3E5AB] transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                  {carregando ? 'Consultando os Astros...' : 'Revelar Síntese Gratuita'}
-                </button>
-              </form>
-            )}
-
-            {resultado && (
-              <div className="space-y-4 text-left">
-                <div className="bg-[#040208] border border-[#D8B4F8]/20 rounded-xl p-4 mb-1">
-                  <p className="text-xs text-[#D8B4F8] italic leading-relaxed">&ldquo;{resultado.abertura || abertura}&rdquo;</p>
-                </div>
-                <div className="bg-[#040208] border border-[#E5C158]/40 p-4 rounded-xl flex items-center justify-between shadow-lg shadow-[#E5C158]/5">
-                  <div>
-                    <span className="text-[10px] text-[#D8B4F8] uppercase tracking-widest font-bold block mb-1">Arquétipo Revelado</span>
-                    <h4 className="text-xl font-serif text-[#E5C158] leading-tight">{resultado.arquetipo}</h4>
-                  </div>
-                  <span className="text-xs px-2.5 py-1 bg-[#E5C158]/10 text-[#E5C158] border border-[#E5C158]/30 rounded-full font-medium whitespace-nowrap">{resultado.elemento}</span>
-                </div>
-                <div className="bg-[#040208] border border-[#E5C158]/20 p-4 rounded-xl space-y-3 text-sm">
-                  <div className="flex gap-3"><span className="text-[#E5C158] mt-0.5">✦</span><div><strong className="text-[#E5C158] block text-xs uppercase tracking-wider mb-0.5">Força Ativa</strong><p className="text-slate-300 leading-relaxed">{resultado.analise.forca}</p></div></div>
-                  <div className="w-full h-px bg-[#E5C158]/10" />
-                  <div className="flex gap-3"><span className="text-[#D8B4F8] mt-0.5">✦</span><div><strong className="text-[#D8B4F8] block text-xs uppercase tracking-wider mb-0.5">Desafio Oculto</strong><p className="text-slate-300 leading-relaxed">{resultado.analise.desafio}</p></div></div>
-                  <div className="w-full h-px bg-[#E5C158]/10" />
-                  <div className="flex gap-3"><span className="text-[#F3E5AB] mt-0.5">✦</span><div><strong className="text-[#F3E5AB] block text-xs uppercase tracking-wider mb-0.5">Conselho do Eixo</strong><p className="text-slate-300 leading-relaxed">{resultado.analise.conselho}</p></div></div>
-                </div>
-                <div className="bg-gradient-to-r from-[#D8B4F8]/10 to-[#D8B4F8]/5 border border-[#D8B4F8]/30 p-4 rounded-lg text-center relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#D8B4F8] to-transparent opacity-50" />
-                  <p className="text-xs text-[#D8B4F8] italic leading-relaxed font-light">&ldquo;{resultado.ganchoPremium}&rdquo;</p>
-                </div>
-                {disclaimer && <p className="text-[10px] text-slate-500 italic text-center">{disclaimer}</p>}
-                <OracleResultModal oraculoId={oraculoAtivo || ''} className="py-4 text-xs uppercase tracking-widest rounded-xl hover:shadow-[0_0_25px_rgba(229,193,88,0.4)] transition-all transform hover:scale-[1.02] active:scale-[0.98]">
-                  Desbloquear Dossiê Completo + Atendimento
-                </OracleResultModal>
-              </div>
-            )}
+      <section className="max-w-5xl mx-auto px-4 py-16">
+        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-8 md:p-12">
+          <h2 className="text-2xl md:text-3xl font-serif text-[#E5D283] mb-6 text-center">
+            Como Funciona Nossa Leitura
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center space-y-3">
+              <div className="text-4xl">🎯</div>
+              <h3 className="text-[#E5D283] font-semibold text-lg">1. Formulação</h3>
+              <p className="text-slate-400 text-sm">
+                Você formula sua pergunta com clareza e intenção, focando no que deseja compreender.
+              </p>
+            </div>
+            <div className="text-center space-y-3">
+              <div className="text-4xl">✨</div>
+              <h3 className="text-[#E5D283] font-semibold text-lg">2. Tiragem</h3>
+              <p className="text-slate-400 text-sm">
+                Os símbolos são revelados através de um processo sagrado de seleção intuitiva.
+              </p>
+            </div>
+            <div className="text-center space-y-3">
+              <div className="text-4xl">📜</div>
+              <h3 className="text-[#E5D283] font-semibold text-lg">3. Análise</h3>
+              <p className="text-slate-400 text-sm">
+                Nossa inteligência oracular gera uma leitura densa, próspera e profundamente analítica.
+              </p>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-slate-800 text-center">
+            <p className="text-slate-400 text-sm mb-4">
+              A leitura gratuita é uma degustação analítica. Para aprofundamento completo,
+              acesse o <strong className="text-[#E5D283]">Dossiê Completo + Atendimento Personalizado</strong>.
+            </p>
           </div>
         </div>
-      )}
-    </div>
+      </section>
+    </main>
   );
 }

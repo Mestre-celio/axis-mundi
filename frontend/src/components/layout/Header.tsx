@@ -26,6 +26,12 @@ export function Header() {
             <Link href="/oraculos" className="text-sm text-gray-300 hover:text-[#E5C158] transition-colors">
               Oráculos
             </Link>
+            <Link href="/sacerdotes" className="text-sm text-gray-300 hover:text-[#E5C158] transition-colors">
+              Sacerdotes
+            </Link>
+            <Link href="/tradicoes" className="text-sm text-gray-300 hover:text-[#E5C158] transition-colors">
+              Tradições
+            </Link>
             <Link href="/dashboard" className="text-sm text-gray-300 hover:text-[#E5C158] transition-colors">
               Dashboard
             </Link>
@@ -84,6 +90,12 @@ export function Header() {
         <div className="px-4 py-4 space-y-3">
           <Link href="/oraculos" className="block text-gray-300" onClick={() => setMenuOpen(false)}>
             Oráculos
+          </Link>
+          <Link href="/sacerdotes" className="block text-gray-300" onClick={() => setMenuOpen(false)}>
+            Sacerdotes
+          </Link>
+          <Link href="/tradicoes" className="block text-gray-300" onClick={() => setMenuOpen(false)}>
+            Tradições
           </Link>
           <Link href="/dashboard" className="block text-gray-300" onClick={() => setMenuOpen(false)}>
             Dashboard
