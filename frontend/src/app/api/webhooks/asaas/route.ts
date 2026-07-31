@@ -3,6 +3,8 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { generateAndSendDossie } from '@/lib/dossieService';
 import crypto from 'crypto';
 
+const VIP_DIAS = 30;
+
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();
@@ -21,17 +23,50 @@ export async function POST(request: NextRequest) {
     }
 
     const event = JSON.parse(rawBody);
-    const { event: eventType, payment } = event;
+    const { event: eventType, payment, subscription } = event;
 
-    if (!eventType || !payment) {
+    if (!eventType) {
       return NextResponse.json({ error: 'Payload inválido' }, { status: 400 });
     }
 
+    const supabase = getSupabaseAdmin();
+    const pagamentoConfirmado = eventType === 'PAYMENT_CONFIRMED' || eventType === 'PAYMENT_RECEIVED';
+
+    // ===== Fluxo de Assinatura (Axium Pass) =====
+    // Eventos de assinatura chegam com `subscription` ou com payment contendo subscription
+    const subscriptionId = subscription?.id || payment?.subscription;
+
+    if (pagamentoConfirmado && subscriptionId) {
+      // Encontra o perfil vinculado à assinatura
+      const { data: perfil } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('subscription_asaas_id', subscriptionId)
+        .maybeSingle();
+
+      if (perfil) {
+        const { error } = await supabase.rpc('ativar_vip', {
+          p_user_id: perfil.id,
+          p_dias: VIP_DIAS,
+        });
+        if (error) {
+          console.error('[Webhook] Erro ao ativar VIP:', error);
+        } else {
+          console.log(`[Webhook] VIP ativado para ${perfil.id} via assinatura ${subscriptionId}`);
+        }
+      }
+      return NextResponse.json({ received: true, success: true });
+    }
+
+    // ===== Fluxo de Pagamento único (Dossiê) =====
     if (eventType !== 'PAYMENT_CONFIRMED' && eventType !== 'PAYMENT_RECEIVED') {
       return NextResponse.json({ received: true, ignored: true });
     }
 
-    const supabase = getSupabaseAdmin();
+    if (!payment) {
+      return NextResponse.json({ error: 'Payload inválido' }, { status: 400 });
+    }
+
     const orderId = payment.externalReference;
 
     if (!orderId) {
@@ -40,7 +75,7 @@ export async function POST(request: NextRequest) {
 
     const { data: pedido } = await supabase
       .from('orders')
-      .select('id, status')
+      .select('id, status, customer_email')
       .eq('id', orderId)
       .single();
 

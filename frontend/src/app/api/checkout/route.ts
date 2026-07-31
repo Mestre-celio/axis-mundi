@@ -105,6 +105,75 @@ export async function POST(request: NextRequest) {
     const asaasKey = process.env.ASAAS_API_KEY;
 
     if (asaasKey) {
+      // 1. Busca ou cria o cliente no Asaas (Asaas exige um customer, não o email cru)
+      const supabase = getSupabaseAdmin();
+
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id, customer_asaas_id')
+        .eq('email', email)
+        .maybeSingle();
+
+      let userId = existingProfile?.id;
+      let customerAsaasId = existingProfile?.customer_asaas_id || null;
+
+      if (!customerAsaasId) {
+        const customersRes = await fetch(`${ASAAS_API_URL}/customers?email=${encodeURIComponent(email)}`, {
+          headers: { 'access_token': asaasKey },
+        });
+        const customersData = await customersRes.json();
+        const existingCustomer = customersData?.data?.find(
+          (c: any) => c.email?.toLowerCase() === email.toLowerCase()
+        );
+
+        if (existingCustomer) {
+          customerAsaasId = existingCustomer.id;
+        } else {
+          const createCustomerRes = await fetch(`${ASAAS_API_URL}/customers`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'access_token': asaasKey,
+            },
+            body: JSON.stringify({
+              name: nome,
+              email,
+              phone: whatsapp,
+              notificationDisabled: false,
+            }),
+          });
+          const createCustomerData = await createCustomerRes.json();
+          if (!createCustomerRes.ok) {
+            console.error('[Checkout] Asaas createCustomer error:', createCustomerData);
+            return NextResponse.json({ error: 'Erro ao criar cliente no Asaas' }, { status: 502 });
+          }
+          customerAsaasId = createCustomerData.id;
+        }
+
+        // Salva o customer_asaas_id no perfil
+        if (userId && customerAsaasId) {
+          await supabase
+            .from('profiles')
+            .update({ customer_asaas_id: customerAsaasId })
+            .eq('id', userId);
+        }
+      }
+
+      if (!userId) {
+        const { data: newProfile } = await supabase
+          .from('profiles')
+          .insert({
+            email,
+            display_name: nome,
+            phone: whatsapp,
+            customer_asaas_id: customerAsaasId,
+          })
+          .select('id')
+          .single();
+        userId = newProfile?.id;
+      }
+
+      // 2. Cria a cobrança PIX
       const response = await fetch(`${ASAAS_API_URL}/payments`, {
         method: 'POST',
         headers: {
@@ -112,7 +181,7 @@ export async function POST(request: NextRequest) {
           'access_token': asaasKey,
         },
         body: JSON.stringify({
-          customer: email,
+          customer: customerAsaasId,
           billingType: 'PIX',
           value: valorFinal,
           dueDate: new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0],
@@ -136,24 +205,6 @@ export async function POST(request: NextRequest) {
         pixCode = pixData.payload || pixData.copiaECola || null;
       } catch {
         // QR code fetch não crítico
-      }
-
-      // Busca ou cria perfil
-      const supabase = getSupabaseAdmin();
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .maybeSingle();
-
-      let userId = existingProfile?.id;
-      if (!userId) {
-        const { data: newProfile } = await supabase
-          .from('profiles')
-          .insert({ email, display_name: nome, phone: whatsapp })
-          .select('id')
-          .single();
-        userId = newProfile?.id;
       }
 
       // Registra a indicação quando o código de referência foi usado

@@ -151,7 +151,7 @@ export default function EpisodesList({ episodios }: Props) {
               </div>
               {bloqueado && (
                 <a
-                  href="/checkout"
+                  href="/assinatura"
                   onClick={(e) => e.stopPropagation()}
                   className="shrink-0 px-3 py-1.5 rounded-lg bg-[#E5C158] text-slate-900 text-xs font-bold hover:bg-yellow-400 transition-all"
                 >

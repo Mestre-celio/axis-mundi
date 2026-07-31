@@ -106,10 +106,10 @@ export default function VideoPlayer({ src, isPremium, episodioId, titulo, onProg
             Este episódio faz parte do acervo Premium. Assine o Portal Axium para acessar toda a biblioteca de sabedoria.
           </p>
           <a
-            href="/checkout"
+            href="/assinatura"
             className="inline-block px-6 py-3 bg-[#E5C158] text-slate-900 font-bold rounded-lg hover:bg-yellow-400 transition-all"
           >
-            Desbloquear Agora
+            Assinar Axium Pass
           </a>
         </div>
       </div>
