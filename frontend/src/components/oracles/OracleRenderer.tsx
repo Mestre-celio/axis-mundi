@@ -5,6 +5,7 @@ import { generateOracleReading } from '@/lib/oracleAI';
 import OracleLoadingState from './OracleLoadingState';
 import OracleReadingResult from './OracleReadingResult';
 import OracleDraw from './OracleDraw';
+import VideoRecomendacao from '@/components/videos/VideoRecomendacao';
 
 interface Props {
   type: string;
@@ -110,6 +111,7 @@ export default function OracleRenderer({ type }: Props) {
           </div>
         </div>
         <OracleReadingResult reading={reading} oracleType={type} />
+        <VideoRecomendacao simbolos={drawnSymbols} />
         <button onClick={handleReset} className="w-full py-3 bg-slate-800 border border-slate-700 text-slate-400 rounded-lg hover:bg-slate-700 hover:text-slate-300 transition-all font-medium">
           Realizar Nova Consulta
         </button>
