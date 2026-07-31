@@ -34,7 +34,7 @@ export default async function CatalogoSlugPage({ params }: CatalogoSlugPageProps
 
   const { data: episodios } = await supabase
     .from('episodios_video')
-    .select('*')
+    .select('id, titulo, duracao_segundos, thumb_url, ordem, is_premium')
     .eq('conteudo_id', conteudo.id)
     .order('ordem', { ascending: true });
 
@@ -129,7 +129,7 @@ export default async function CatalogoSlugPage({ params }: CatalogoSlugPageProps
             <h2 className="font-serif text-xl text-[#E5C158] mb-4">
               Episódios <span className="text-slate-500 text-sm">({episodios.length})</span>
             </h2>
-            <EpisodesList conteudoId={conteudo.id} episodios={episodios} />
+            <EpisodesList slug={slug} conteudoId={conteudo.id} episodios={episodios} />
           </div>
         )}
       </div>

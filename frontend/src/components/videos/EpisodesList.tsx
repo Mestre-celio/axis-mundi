@@ -1,18 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import VideoPlayer from '@/components/videos/VideoPlayer';
 import { CheckCircle2, Lock, Play, Clock } from 'lucide-react';
 
 interface Episodio {
   id: string;
   titulo: string | null;
   duracao_segundos: number | null;
-  video_provider: string | null;
-  video_provider_id: string | null;
-  stream_url: string | null;
-  hls_url: string | null;
   thumb_url: string | null;
   ordem: number;
   is_premium: boolean;
@@ -20,6 +16,7 @@ interface Episodio {
 
 interface Props {
   conteudoId: string;
+  slug: string;
   episodios: Episodio[];
 }
 
@@ -27,8 +24,8 @@ interface ProgressoMap {
   [episodioId: string]: { progresso_segundos: number; concluido: boolean };
 }
 
-export default function EpisodesList({ episodios }: Props) {
-  const [ativo, setAtivo] = useState<Episodio | null>(episodios[0] || null);
+export default function EpisodesList({ slug, episodios }: Props) {
+  const router = useRouter();
   const [progresso, setProgresso] = useState<ProgressoMap>({});
   const [isVip, setIsVip] = useState(false);
 
@@ -67,8 +64,6 @@ export default function EpisodesList({ episodios }: Props) {
     };
   }, [episodios]);
 
-  const obterUrl = (ep: Episodio) => ep.hls_url || ep.stream_url || ep.video_provider_id || null;
-
   const formatarDuracao = (segundos: number | null) => {
     if (!segundos) return 'N/A';
     const m = Math.floor(segundos / 60);
@@ -76,62 +71,45 @@ export default function EpisodesList({ episodios }: Props) {
     return `${m} min ${s > 0 ? `${s}s` : ''}`;
   };
 
-  const handleProgresso = (episodioId: string, concluido: boolean) => {
-    setProgresso((prev) => ({
-      ...prev,
-      [episodioId]: {
-        progresso_segundos: prev[episodioId]?.progresso_segundos || 0,
-        concluido,
-      },
-    }));
+  const assistir = (ep: Episodio) => {
+    if (ep.is_premium && !isVip) return;
+    router.push(`/catalogo/${slug}/assistir?ep=${ep.id}`);
   };
 
   return (
-    <div className="space-y-6">
-      {ativo && obterUrl(ativo) && (
-        <VideoPlayer
-          key={ativo.id}
-          src={obterUrl(ativo)!}
-          isPremium={ativo.is_premium}
-          episodioId={ativo.id}
-          titulo={ativo.titulo || 'Episódio'}
-          onProgresso={(concluido) => handleProgresso(ativo.id, concluido)}
-        />
-      )}
+    <div className="space-y-3">
+      {episodios.map((ep, i) => {
+        const prog = progresso[ep.id];
+        const bloqueado = ep.is_premium && !isVip;
 
-      <div className="space-y-3">
-        {episodios.map((ep, i) => {
-          const isAtivo = ativo?.id === ep.id;
-          const prog = progresso[ep.id];
-          const bloqueado = ep.is_premium && !isVip;
-
-          return (
+        return (
+          <div
+            key={ep.id}
+            className={`w-full flex items-center gap-4 rounded-xl border p-4 transition-all ${
+              bloqueado
+                ? 'border-slate-800 bg-slate-900/60 opacity-70'
+                : 'border-slate-800 bg-slate-900/60 hover:border-[#E5C158]/40'
+            }`}
+          >
             <button
-              key={ep.id}
               type="button"
-              onClick={() => obterUrl(ep) && !bloqueado && setAtivo(ep)}
-              disabled={!obterUrl(ep) || bloqueado}
-              className={`w-full flex items-center gap-4 rounded-xl border p-4 text-left transition-all ${
-                isAtivo
-                  ? 'border-[#E5C158]/60 bg-[#E5C158]/10'
-                  : 'border-slate-800 bg-slate-900/60 hover:border-[#E5C158]/40'
-              } ${bloqueado ? 'opacity-70' : ''} disabled:opacity-60 disabled:cursor-not-allowed`}
+              onClick={() => assistir(ep)}
+              disabled={bloqueado}
+              className="flex items-center gap-4 flex-1 min-w-0 text-left disabled:cursor-not-allowed"
             >
               <div className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-lg ${
                 prog?.concluido
                   ? 'bg-green-900/40 text-green-400'
-                  : isAtivo
-                  ? 'bg-[#E5C158] text-slate-900'
-                  : 'bg-slate-800 text-slate-400'
+                  : bloqueado
+                  ? 'bg-slate-800 text-slate-500'
+                  : 'bg-[#E5C158] text-slate-900'
               }`}>
                 {prog?.concluido ? (
                   <CheckCircle2 className="w-5 h-5" />
                 ) : bloqueado ? (
                   <Lock className="w-4 h-4" />
-                ) : isAtivo ? (
-                  <Play className="w-4 h-4" />
                 ) : (
-                  i + 1
+                  <Play className="w-4 h-4" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -149,19 +127,19 @@ export default function EpisodesList({ episodios }: Props) {
                   </div>
                 )}
               </div>
-              {bloqueado && (
-                <a
-                  href="/assinatura"
-                  onClick={(e) => e.stopPropagation()}
-                  className="shrink-0 px-3 py-1.5 rounded-lg bg-[#E5C158] text-slate-900 text-xs font-bold hover:bg-yellow-400 transition-all"
-                >
-                  Desbloquear
-                </a>
-              )}
             </button>
-          );
-        })}
-      </div>
+            {bloqueado && (
+              <a
+                href="/assinatura"
+                onClick={(e) => e.stopPropagation()}
+                className="shrink-0 px-3 py-1.5 rounded-lg bg-[#E5C158] text-slate-900 text-xs font-bold hover:bg-yellow-400 transition-all"
+              >
+                Desbloquear
+              </a>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
