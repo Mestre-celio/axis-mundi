@@ -84,13 +84,15 @@ export async function salvarReflexao(
     return { success: false, error: 'Usuário não autenticado' };
   }
 
+  const nota = notaPessoal.trim().slice(0, 500);
+
   const { error } = await supabase
     .from('reflexoes_diario')
     .upsert(
       {
         usuario_id: user.id,
         verso_id: versoId,
-        nota_pessoal: notaPessoal.trim() === '' ? null : notaPessoal.trim(),
+        nota_pessoal: nota === '' ? null : nota,
         is_salvo_grimorio: isSalvoGrimorio,
         updated_at: new Date().toISOString(),
       },

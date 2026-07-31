@@ -157,9 +157,13 @@ export default function DiarioCard({ verso, reflexaoInicial, streakInicial }: Pr
                 value={notaPessoal}
                 onChange={(e) => setNotaPessoal(e.target.value)}
                 rows={4}
+                maxLength={500}
                 placeholder="O que este verso tocou em você hoje? Guarde aqui seus insights..."
                 className="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:border-[#E5C158] transition-colors resize-none"
               />
+              <div className="flex justify-end">
+                <span className="text-xs text-slate-600 tabular-nums">{notaPessoal.length}/500</span>
+              </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
                   <input
