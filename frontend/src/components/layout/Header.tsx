@@ -38,6 +38,12 @@ export function Header() {
             {user ? (
               <div className="flex items-center gap-4">
                 <Link
+                  href="/diario"
+                  className="text-sm text-[#D8B4F8] hover:text-white transition-colors"
+                >
+                  Diário
+                </Link>
+                <Link
                   href="/dashboard"
                   className="flex items-center gap-2 text-sm text-gray-300 hover:text-[#E5C158]"
                 >
@@ -101,9 +107,14 @@ export function Header() {
             Dashboard
           </Link>
           {user ? (
-            <button onClick={() => { signOut(); setMenuOpen(false); }} className="block text-gray-400">
-              Sair
-            </button>
+            <>
+              <Link href="/diario" className="block text-[#D8B4F8]" onClick={() => setMenuOpen(false)}>
+                Diário
+              </Link>
+              <button onClick={() => { signOut(); setMenuOpen(false); }} className="block text-gray-400">
+                Sair
+              </button>
+            </>
           ) : (
             <>
               <Link href="/login" className="block text-gray-300" onClick={() => setMenuOpen(false)}>
