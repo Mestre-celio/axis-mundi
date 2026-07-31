@@ -5,13 +5,101 @@ const ASAAS_API_URL = process.env.ASAAS_ENV === 'sandbox'
   ? 'https://sandbox.asaas.com/api/v3'
   : 'https://api.asaas.com/v3';
 
+const REFERRAL_DISCOUNT_PERCENT = 15;
+
+interface CouponResult {
+  valid: boolean;
+  discount: number;
+  finalAmount: number;
+  code: string;
+  kind: 'coupon' | 'referral';
+}
+
+async function validateCoupon(code: string, originalAmount: number): Promise<CouponResult> {
+  const cleanCode = code.trim().toUpperCase();
+  const supabase = getSupabaseAdmin();
+
+  const { data: coupon } = await supabase
+    .from('coupons')
+    .select('*')
+    .eq('code', cleanCode)
+    .eq('is_active', true)
+    .maybeSingle();
+
+  if (coupon) {
+    if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
+      throw new Error('Este cupom expirou.');
+    }
+    if (coupon.max_uses && coupon.uses_count >= coupon.max_uses) {
+      throw new Error('Este cupom já atingiu o limite de usos.');
+    }
+
+    let discount = 0;
+    if (coupon.discount_type === 'percentage') {
+      discount = (originalAmount * Number(coupon.discount_value)) / 100;
+    } else {
+      discount = Number(coupon.discount_value);
+    }
+    discount = Math.min(discount, originalAmount);
+    const finalAmount = Math.round((originalAmount - discount) * 100) / 100;
+
+    return { valid: true, discount: Math.round(discount * 100) / 100, finalAmount, code: cleanCode, kind: 'coupon' };
+  }
+
+  const { data: referral } = await supabase
+    .from('referral_codes')
+    .select('code')
+    .eq('code', cleanCode)
+    .maybeSingle();
+
+  if (referral) {
+    const discount = (originalAmount * REFERRAL_DISCOUNT_PERCENT) / 100;
+    const finalAmount = Math.round((originalAmount - discount) * 100) / 100;
+    return { valid: true, discount: Math.round(discount * 100) / 100, finalAmount, code: cleanCode, kind: 'referral' };
+  }
+
+  throw new Error('Cupom ou código inválido.');
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { nome, email, whatsapp, dataNascimento, valor, oracle, sacerdote } = body;
+    const { nome, email, whatsapp, dataNascimento, valor, oracle, sacerdote, couponCode } = body;
 
     if (!nome || !email || !valor) {
       return NextResponse.json({ error: 'Dados obrigatórios ausentes' }, { status: 400 });
+    }
+
+    const valorNumero = Number(valor);
+    if (isNaN(valorNumero) || valorNumero <= 0) {
+      return NextResponse.json({ error: 'Valor inválido' }, { status: 400 });
+    }
+
+    // Valida cupom/código de indicação, se informado
+    let aplicado: CouponResult | null = null;
+    if (couponCode) {
+      try {
+        aplicado = await validateCoupon(couponCode, valorNumero);
+      } catch (err: any) {
+        return NextResponse.json({ error: err.message || 'Cupom inválido' }, { status: 400 });
+      }
+    }
+
+    const valorFinal = aplicado ? aplicado.finalAmount : valorNumero;
+    const metadata: Record<string, any> = {
+      oracle,
+      sacerdote,
+      sacerdote_nome: sacerdote,
+      sacerdote_email: body.sacerdoteEmail,
+      dataNascimento,
+      horaNascimento: body.horaNascimento,
+      localNascimento: body.localNascimento,
+    };
+
+    if (aplicado) {
+      metadata.coupon_code = aplicado.code;
+      metadata.coupon_kind = aplicado.kind;
+      metadata.coupon_discount = aplicado.discount;
     }
 
     const asaasKey = process.env.ASAAS_API_KEY;
@@ -26,9 +114,9 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({
           customer: email,
           billingType: 'PIX',
-          value: valor,
+          value: valorFinal,
           dueDate: new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0],
-          description: `Dossiê Completo - ${oracle || 'Tarô'}${sacerdote ? ` (${sacerdote})` : ''}`,
+          description: `Dossiê Completo - ${oracle || 'Tarô'}${aplicado ? ` (Cupom: ${aplicado.code})` : ''}${sacerdote ? ` (${sacerdote})` : ''}`,
         }),
       });
 
@@ -51,15 +139,16 @@ export async function POST(request: NextRequest) {
       }
 
       // Busca ou cria perfil
-      const { data: existingProfile } = await getSupabaseAdmin()
+      const supabase = getSupabaseAdmin();
+      const { data: existingProfile } = await supabase
         .from('profiles')
         .select('id')
         .eq('email', email)
-        .single();
+        .maybeSingle();
 
       let userId = existingProfile?.id;
       if (!userId) {
-        const { data: newProfile } = await getSupabaseAdmin()
+        const { data: newProfile } = await supabase
           .from('profiles')
           .insert({ email, display_name: nome, phone: whatsapp })
           .select('id')
@@ -67,48 +156,108 @@ export async function POST(request: NextRequest) {
         userId = newProfile?.id;
       }
 
-      // Salva pedido no Supabase com ID do Asaas como externalReference
-      const { data: order } = await getSupabaseAdmin()
+      // Registra a indicação quando o código de referência foi usado
+      if (aplicado?.kind === 'referral' && userId) {
+        const { data: refCode } = await supabase
+          .from('referral_codes')
+          .select('user_id')
+          .eq('code', aplicado.code)
+          .maybeSingle();
+
+        if (refCode && refCode.user_id !== userId) {
+          await supabase.from('referrals').insert({
+            referrer_id: refCode.user_id,
+            referred_email: email,
+            status: 'pending',
+            coupon_code: aplicado.code,
+          });
+        }
+      }
+
+      // Salva pedido no Supabase
+      const { data: order } = await supabase
         .from('orders')
         .insert({
           user_id: userId || null,
           customer_name: nome,
           customer_email: email,
           customer_phone: whatsapp,
-          amount: valor,
+          amount: valorFinal,
+          original_amount: valorNumero,
           status: 'pending',
           asaas_id: payment.id,
           pix_copy_paste: pixCode,
-          metadata: { oracle, sacerdote, sacerdote_nome: sacerdote, sacerdote_email: body.sacerdoteEmail, dataNascimento, horaNascimento: body.horaNascimento, localNascimento: body.localNascimento },
+          metadata,
         })
         .select('id')
         .single();
+
+      // Incrementa contador de usos do cupom promocional
+      if (aplicado?.kind === 'coupon') {
+        try {
+          const { data: c } = await supabase
+            .from('coupons')
+            .select('uses_count')
+            .eq('code', aplicado.code)
+            .maybeSingle();
+          const n = Number(c?.uses_count || 0) + 1;
+          await supabase.from('coupons').update({ uses_count: n }).eq('code', aplicado.code);
+        } catch (err) {
+          console.warn('[Checkout] Erro ao incrementar cupom:', err);
+        }
+      }
 
       return NextResponse.json({
         success: true,
         pixCode,
         orderId: payment.id,
         externalReference: order?.id,
+        originalAmount: valorNumero,
+        discount: aplicado?.discount || 0,
+        finalAmount: valorFinal,
       });
     }
 
     // Fallback mock
-    const mockPix = '00020126580014br.gov.bcb.pix0136' + Math.random().toString(36).substring(2, 15);
+    const mockPix = '00020126580014br.gov.bdc.pix0136' + Math.random().toString(36).substring(2, 15);
 
-    await getSupabaseAdmin().from('orders').insert({
+    const supabase = getSupabaseAdmin();
+
+    // Registra a indicação quando o código de referência foi usado (mock)
+    if (aplicado?.kind === 'referral') {
+      const { data: refCode } = await supabase
+        .from('referral_codes')
+        .select('user_id')
+        .eq('code', aplicado.code)
+        .maybeSingle();
+      if (refCode && refCode.user_id !== null) {
+        await supabase.from('referrals').insert({
+          referrer_id: refCode.user_id,
+          referred_email: email,
+          status: 'pending',
+          coupon_code: aplicado.code,
+        });
+      }
+    }
+
+    await supabase.from('orders').insert({
       customer_name: nome,
       customer_email: email,
       customer_phone: whatsapp,
-      amount: valor,
+      amount: valorFinal,
+      original_amount: valorNumero,
       status: 'pending',
       pix_copy_paste: mockPix,
-      metadata: { oracle, sacerdote, sacerdote_nome: sacerdote, sacerdote_email: body.sacerdoteEmail, dataNascimento },
+      metadata,
     });
 
     return NextResponse.json({
       success: true,
       pixCode: mockPix,
       orderId: 'ord_' + Date.now().toString(36),
+      originalAmount: valorNumero,
+      discount: aplicado?.discount || 0,
+      finalAmount: valorFinal,
     });
   } catch (error) {
     console.error('[Checkout] Erro:', error);

@@ -56,6 +56,9 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex gap-3">
+          <Link href="/dashboard/indicacoes">
+            <Button variant="secondary" size="sm">Indicar &amp; Ganhar</Button>
+          </Link>
           <Link href="/oraculos">
             <Button variant="secondary" size="sm">Nova Consulta</Button>
           </Link>

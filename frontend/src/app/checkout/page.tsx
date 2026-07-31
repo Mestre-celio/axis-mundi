@@ -39,14 +39,51 @@ function CheckoutContent() {
   const [pixCode, setPixCode] = useState('');
   const [copied, setCopied] = useState(false);
   const [gerandoPix, setGerandoPix] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [couponStatus, setCouponStatus] = useState<{ ok: boolean; message: string; discount?: number; finalAmount?: number } | null>(null);
+  const [validandoCupom, setValidandoCupom] = useState(false);
 
   useEffect(() => {
     const service = searchParams.get('service') || 'dossie-completo';
     const oracle = searchParams.get('oracle') || 'taro';
     const sacerdote = searchParams.get('sacerdote') || 'mestre-axium';
+    const ref = searchParams.get('ref');
     const valor = service === 'dossie-completo' ? 197 : 97;
     setOrderSummary({ service, oracle, sacerdote, valor });
+    if (ref) setCouponCode(ref.toUpperCase());
   }, [searchParams]);
+
+  const validarCupom = async () => {
+    const code = couponCode.trim();
+    if (!code) {
+      setCouponStatus(null);
+      return;
+    }
+    setValidandoCupom(true);
+    setCouponStatus(null);
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, originalAmount: orderSummary.valor }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCouponStatus({
+          ok: true,
+          message: data.label,
+          discount: data.discount,
+          finalAmount: data.finalAmount,
+        });
+      } else {
+        setCouponStatus({ ok: false, message: data.error || 'Cupom inválido.' });
+      }
+    } catch {
+      setCouponStatus({ ok: false, message: 'Erro ao validar cupom.' });
+    } finally {
+      setValidandoCupom(false);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -60,12 +97,15 @@ function CheckoutContent() {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, ...orderSummary }),
+        body: JSON.stringify({ ...formData, ...orderSummary, couponCode: couponCode.trim() }),
       });
       const data = await res.json();
 
       if (data.success) {
         setPixCode(data.pixCode);
+        if (data.finalAmount) {
+          setOrderSummary((prev) => ({ ...prev, valor: data.finalAmount }));
+        }
         setStep('payment');
       } else {
         alert('Erro ao gerar pagamento. Tente novamente.');
@@ -339,12 +379,46 @@ function CheckoutContent() {
                 </div>
               </div>
 
+              <div>
+                <h2 className="text-xl font-serif text-[#E5D283] mb-4">Cupom de Desconto</h2>
+                <p className="text-slate-400 text-sm mb-4">
+                  Tem um cupom ou código de indicação? Aplique aqui.
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    id="coupon"
+                    name="coupon"
+                    value={couponCode}
+                    onChange={(e) => {
+                      setCouponCode(e.target.value.toUpperCase());
+                      setCouponStatus(null);
+                    }}
+                    placeholder="Ex: AXIUM10 ou SEU-CODIGO"
+                    className="flex-1 px-4 py-3 bg-slate-950 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:border-[#E5D283] transition-colors uppercase"
+                  />
+                  <button
+                    type="button"
+                    onClick={validarCupom}
+                    disabled={validandoCupom || !couponCode.trim()}
+                    className="px-6 py-3 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                  >
+                    {validandoCupom ? 'Validando...' : 'Validar'}
+                  </button>
+                </div>
+                {couponStatus && (
+                  <p className={`mt-2 text-sm ${couponStatus.ok ? 'text-green-400' : 'text-red-400'}`}>
+                    {couponStatus.ok ? `✓ ${couponStatus.message}` : `✗ ${couponStatus.message}`}
+                  </p>
+                )}
+              </div>
+
               <button
                 type="submit"
                 disabled={gerandoPix}
                 className="w-full py-4 bg-[#E5D283] text-slate-900 font-bold rounded-lg hover:bg-yellow-400 transition-all shadow-lg hover:shadow-[#E5D283]/20 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {gerandoPix ? 'Gerando PIX...' : 'Gerar PIX para Pagamento'}
+                {gerandoPix ? 'Gerando PIX...' : couponStatus?.ok ? `Gerar PIX (R$ ${couponStatus.finalAmount?.toFixed(2)})` : 'Gerar PIX para Pagamento'}
               </button>
             </form>
           </div>
@@ -366,9 +440,19 @@ function CheckoutContent() {
                   <span className="text-slate-200 text-right">{sacerdoteNames[orderSummary.sacerdote]}</span>
                 </div>
                 <div className="pt-3 border-t border-slate-800">
+                  {couponStatus?.ok && (
+                    <div className="flex justify-between mb-2">
+                      <span className="text-green-400">Desconto ({couponCode}):</span>
+                      <span className="text-green-400 font-semibold">
+                        - R$ {couponStatus.discount?.toFixed(2)}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-slate-300 font-semibold">Total:</span>
-                    <span className="text-[#E5D283] font-bold text-2xl">R$ {orderSummary.valor.toFixed(2)}</span>
+                    <span className="text-[#E5D283] font-bold text-2xl">
+                      R$ {(couponStatus?.ok ? couponStatus.finalAmount : orderSummary.valor)?.toFixed(2)}
+                    </span>
                   </div>
                 </div>
               </div>
