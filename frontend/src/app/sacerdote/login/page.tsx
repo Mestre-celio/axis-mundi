@@ -19,9 +19,7 @@ export default function SacerdoteLogin() {
     });
 
     if (response.ok) {
-      const { sacerdoteId } = await response.json();
-      localStorage.setItem('sacerdote_session', sacerdoteId);
-      router.push('/sacerdote/painel');
+      router.push('/painel-sacerdote');
     } else {
       setError('Token de acesso inválido.');
     }
