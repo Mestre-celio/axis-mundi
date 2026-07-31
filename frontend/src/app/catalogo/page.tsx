@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import Link from 'next/link';
+import { PlayCircle, Lock, Sparkles } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -86,7 +87,9 @@ export default async function CatalogoPage({ searchParams }: CatalogoPageProps) 
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-7xl mx-auto px-4 py-20">
         <div className="mb-12">
-          <p className="text-[#E5C158] text-sm uppercase tracking-[0.3em] mb-3">Biblioteca de Sabedoria</p>
+          <p className="text-[#E5C158] text-sm uppercase tracking-[0.3em] mb-3 flex items-center gap-2">
+            <Sparkles className="w-4 h-4" /> Biblioteca de Sabedoria
+          </p>
           <h1 className="text-3xl md:text-5xl font-serif text-[#E5C158] mb-4 tracking-wide">Catálogo</h1>
           <p className="text-slate-400 max-w-2xl leading-relaxed">
             Aulas, rituais e meditações guiadas pela metodologia da Terapia Integrativa do Movimento,
@@ -155,7 +158,7 @@ export default async function CatalogoPage({ searchParams }: CatalogoPageProps) 
 
         {conteudosFiltrados.length === 0 ? (
           <div className="text-center py-20 bg-slate-900/50 border border-slate-800 rounded-2xl">
-            <p className="text-4xl mb-4">🔮</p>
+            <Sparkles className="w-12 h-12 text-slate-700 mx-auto mb-4" />
             <p className="text-slate-300 font-serif text-lg mb-2">Nenhum conteúdo encontrado</p>
             <p className="text-slate-500 text-sm">Tente ajustar os filtros acima.</p>
           </div>
@@ -176,13 +179,18 @@ export default async function CatalogoPage({ searchParams }: CatalogoPageProps) 
                       className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
                     />
                   ) : (
-                    <span className="group-hover:scale-110 transition-transform">🎬</span>
+                    <PlayCircle className="w-12 h-12 text-slate-700 group-hover:text-[#E5C158] transition-colors" />
                   )}
                   {conteudo.is_premium && (
-                    <span className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-[#E5C158]/20 text-[#E5C158] border border-[#E5C158]/40 text-[10px] font-semibold">
-                      Premium
+                    <span className="absolute top-3 right-3 px-2 py-1 rounded-full bg-[#E5C158]/90 text-slate-900 text-[10px] font-bold flex items-center gap-1">
+                      <Lock className="w-3 h-3" /> VIP
                     </span>
                   )}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <span className="text-[#E5C158] font-semibold flex items-center gap-2">
+                      Explorar Trilha <PlayCircle className="w-5 h-5" />
+                    </span>
+                  </div>
                 </div>
                 <div className="p-4">
                   <p className="text-[10px] uppercase tracking-widest text-[#E5C158]/70 mb-1">

@@ -2,6 +2,7 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import EpisodesList from '@/components/videos/EpisodesList';
+import { ChevronLeft, FileText, Film, Lock } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -75,7 +76,7 @@ export default async function CatalogoSlugPage({ params }: CatalogoSlugPageProps
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-6xl mx-auto px-4 py-16">
         <Link href="/catalogo" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-[#E5C158] transition-colors mb-8">
-          ← Voltar ao Catálogo
+          <ChevronLeft className="w-4 h-4" /> Voltar ao Catálogo
         </Link>
 
         <div className="relative rounded-2xl overflow-hidden border border-slate-800 mb-10">
@@ -84,7 +85,7 @@ export default async function CatalogoSlugPage({ params }: CatalogoSlugPageProps
               // eslint-disable-next-line @next/next/no-img-element
               <img src={conteudo.capa_url} alt={conteudo.titulo} className="object-cover w-full h-full" />
             ) : (
-              <span className="text-7xl">🎬</span>
+              <Film className="w-20 h-20 text-slate-800" />
             )}
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
@@ -96,8 +97,8 @@ export default async function CatalogoSlugPage({ params }: CatalogoSlugPageProps
                 </span>
               )}
               {conteudo.is_premium && (
-                <span className="px-3 py-1 rounded-full bg-[#E5C158] text-slate-900 text-xs font-bold">
-                  Premium
+                <span className="px-3 py-1 rounded-full bg-[#E5C158] text-slate-900 text-xs font-bold flex items-center gap-1">
+                  <Lock className="w-3 h-3" /> Axium Pass
                 </span>
               )}
               {badges.slice(0, 4).map((badge) => (
@@ -120,10 +121,9 @@ export default async function CatalogoSlugPage({ params }: CatalogoSlugPageProps
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#E5C158] text-slate-900 font-bold rounded-lg hover:bg-yellow-400 transition-all mb-10"
           >
-            📄 Baixar Dossiê Complementar
+            <FileText className="w-4 h-4" /> Baixar Dossiê Complementar
           </a>
         )}
-
         {episodios && episodios.length > 0 && (
           <div>
             <h2 className="font-serif text-xl text-[#E5C158] mb-4">

@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 import VideoPlayer from '@/components/videos/VideoPlayer';
+import { CheckCircle2, Lock, Play, Clock } from 'lucide-react';
 
 interface Episodio {
   id: string;
@@ -21,16 +23,67 @@ interface Props {
   episodios: Episodio[];
 }
 
+interface ProgressoMap {
+  [episodioId: string]: { progresso_segundos: number; concluido: boolean };
+}
+
 export default function EpisodesList({ episodios }: Props) {
   const [ativo, setAtivo] = useState<Episodio | null>(episodios[0] || null);
+  const [progresso, setProgresso] = useState<ProgressoMap>({});
+  const [isVip, setIsVip] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    const carregarProgresso = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_vip, vip_expires_at')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      if (active) {
+        setIsVip(Boolean(profile?.is_vip || (profile?.vip_expires_at && new Date(profile.vip_expires_at) > new Date())));
+      }
+
+      const { data: progs } = await supabase
+        .from('progresso_video')
+        .select('episodio_id, progresso_segundos, concluido')
+        .eq('user_id', session.user.id);
+      if (active && progs) {
+        const map: ProgressoMap = {};
+        progs.forEach((p) => {
+          map[p.episodio_id] = { progresso_segundos: Number(p.progresso_segundos) || 0, concluido: Boolean(p.concluido) };
+        });
+        setProgresso(map);
+      }
+    };
+
+    carregarProgresso();
+    return () => {
+      active = false;
+    };
+  }, [episodios]);
 
   const obterUrl = (ep: Episodio) => ep.hls_url || ep.stream_url || ep.video_provider_id || null;
 
   const formatarDuracao = (segundos: number | null) => {
-    if (!segundos) return '';
+    if (!segundos) return 'N/A';
     const m = Math.floor(segundos / 60);
     const s = segundos % 60;
-    return `${m}:${String(s).padStart(2, '0')}`;
+    return `${m} min ${s > 0 ? `${s}s` : ''}`;
+  };
+
+  const handleProgresso = (episodioId: string, concluido: boolean) => {
+    setProgresso((prev) => ({
+      ...prev,
+      [episodioId]: {
+        progresso_segundos: prev[episodioId]?.progresso_segundos || 0,
+        concluido,
+      },
+    }));
   };
 
   return (
@@ -42,41 +95,68 @@ export default function EpisodesList({ episodios }: Props) {
           isPremium={ativo.is_premium}
           episodioId={ativo.id}
           titulo={ativo.titulo || 'Episódio'}
+          onProgresso={(concluido) => handleProgresso(ativo.id, concluido)}
         />
       )}
 
       <div className="space-y-3">
         {episodios.map((ep, i) => {
           const isAtivo = ativo?.id === ep.id;
+          const prog = progresso[ep.id];
+          const bloqueado = ep.is_premium && !isVip;
+
           return (
             <button
               key={ep.id}
               type="button"
-              onClick={() => obterUrl(ep) && setAtivo(ep)}
-              disabled={!obterUrl(ep)}
+              onClick={() => obterUrl(ep) && !bloqueado && setAtivo(ep)}
+              disabled={!obterUrl(ep) || bloqueado}
               className={`w-full flex items-center gap-4 rounded-xl border p-4 text-left transition-all ${
                 isAtivo
                   ? 'border-[#E5C158]/60 bg-[#E5C158]/10'
                   : 'border-slate-800 bg-slate-900/60 hover:border-[#E5C158]/40'
-              } disabled:opacity-60 disabled:cursor-not-allowed`}
+              } ${bloqueado ? 'opacity-70' : ''} disabled:opacity-60 disabled:cursor-not-allowed`}
             >
-              <div className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-lg text-sm font-bold ${
-                isAtivo ? 'bg-[#E5C158] text-slate-900' : 'bg-slate-800 text-slate-400'
+              <div className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-lg ${
+                prog?.concluido
+                  ? 'bg-green-900/40 text-green-400'
+                  : isAtivo
+                  ? 'bg-[#E5C158] text-slate-900'
+                  : 'bg-slate-800 text-slate-400'
               }`}>
-                {i + 1}
+                {prog?.concluido ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : bloqueado ? (
+                  <Lock className="w-4 h-4" />
+                ) : isAtivo ? (
+                  <Play className="w-4 h-4" />
+                ) : (
+                  i + 1
+                )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-slate-200 font-medium text-sm truncate">
+                <p className={`text-sm font-medium truncate ${bloqueado ? 'text-slate-500' : 'text-slate-200'}`}>
                   {ep.titulo || `Episódio ${i + 1}`}
                 </p>
                 {ep.duracao_segundos && (
-                  <p className="text-slate-500 text-xs mt-0.5">⏱️ {formatarDuracao(ep.duracao_segundos)}</p>
+                  <p className="text-slate-500 text-xs mt-0.5 flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> {formatarDuracao(ep.duracao_segundos)}
+                  </p>
+                )}
+                {prog && !prog.concluido && prog.progresso_segundos > 0 && (
+                  <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-2">
+                    <div className="h-full bg-[#E5C158] rounded-full" style={{ width: `${Math.min(100, prog.progresso_segundos / 10)}%` }} />
+                  </div>
                 )}
               </div>
-              {ep.is_premium && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#E5C158]/20 text-[#E5C158] border border-[#E5C158]/30 shrink-0">
-                  Premium
-                </span>
+              {bloqueado && (
+                <a
+                  href="/checkout"
+                  onClick={(e) => e.stopPropagation()}
+                  className="shrink-0 px-3 py-1.5 rounded-lg bg-[#E5C158] text-slate-900 text-xs font-bold hover:bg-yellow-400 transition-all"
+                >
+                  Desbloquear
+                </a>
               )}
             </button>
           );
