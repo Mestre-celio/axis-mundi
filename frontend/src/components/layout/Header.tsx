@@ -50,6 +50,12 @@ export function Header() {
                   Grimório
                 </Link>
                 <Link
+                  href="/diario/progresso"
+                  className="text-sm text-[#D8B4F8] hover:text-white transition-colors"
+                >
+                  Jornada
+                </Link>
+                <Link
                   href="/dashboard"
                   className="flex items-center gap-2 text-sm text-gray-300 hover:text-[#E5C158]"
                 >
@@ -119,6 +125,9 @@ export function Header() {
               </Link>
               <Link href="/diario/grimorio" className="block text-[#D8B4F8]" onClick={() => setMenuOpen(false)}>
                 Grimório
+              </Link>
+              <Link href="/diario/progresso" className="block text-[#D8B4F8]" onClick={() => setMenuOpen(false)}>
+                Jornada
               </Link>
               <button onClick={() => { signOut(); setMenuOpen(false); }} className="block text-gray-400">
                 Sair

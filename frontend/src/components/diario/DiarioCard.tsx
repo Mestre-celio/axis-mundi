@@ -13,6 +13,7 @@ import {
   Sparkles,
   Sun,
   Feather,
+  Trophy,
 } from 'lucide-react';
 
 function dateKey(d: Date): string {
@@ -135,6 +136,16 @@ export default function DiarioCard({ verso, reflexaoInicial, streakInicial, pref
                   <div className="text-left">
                     <p className="text-sm font-bold leading-none text-[#D8B4F8]">Grimório</p>
                     <p className="text-[10px] text-slate-400 uppercase tracking-wider">Minha coleção</p>
+                  </div>
+                </Link>
+                <Link
+                  href="/diario/progresso"
+                  className="flex items-center gap-2 bg-slate-900/80 border border-[#E5C158]/30 rounded-full px-5 py-2 hover:border-[#E5C158] transition-colors"
+                >
+                  <Trophy className="w-5 h-5 text-[#E5C158]" />
+                  <div className="text-left">
+                    <p className="text-sm font-bold leading-none text-[#E5C158]">Jornada</p>
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wider">Sua evolução</p>
                   </div>
                 </Link>
               </div>
