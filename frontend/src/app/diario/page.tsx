@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { getVersoHoje } from '@/app/actions/diarioActions';
+import { getVersoHoje, getVersoPorId } from '@/app/actions/diarioActions';
 import DiarioCard from '@/components/diario/DiarioCard';
 
 export const metadata: Metadata = {
@@ -10,7 +10,11 @@ export const metadata: Metadata = {
     'Um verso por dia, unindo a sabedoria ancestral, os temperamentos, os chakras e o movimento consciente. Mantenha acesa a sua Chama Sagrada.',
 };
 
-export default async function DiarioPage() {
+export default async function DiarioPage({
+  searchParams,
+}: {
+  searchParams: { verso?: string };
+}) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -18,9 +22,14 @@ export default async function DiarioPage() {
     redirect('/login');
   }
 
-  const { verso, reflexao, streak } = await getVersoHoje();
+  const { verso, reflexao, streak } = searchParams.verso
+    ? await getVersoPorId(searchParams.verso)
+    : await getVersoHoje();
 
   if (!verso) {
+    if (searchParams.verso) {
+      redirect('/diario');
+    }
     return (
       <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4">
         <div className="max-w-md text-center space-y-4 bg-slate-900 border border-slate-800 rounded-2xl p-10">

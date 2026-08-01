@@ -72,6 +72,66 @@ export async function getVersoHoje() {
   return { verso: versoFinal, reflexao, streak };
 }
 
+export async function getVersoPorId(versoId: string) {
+  const supabase = await createClient();
+
+  const { data: verso } = await supabase
+    .from('versos_diarios')
+    .select('*')
+    .eq('id', versoId)
+    .maybeSingle();
+
+  if (!verso) return { verso: null, reflexao: null, streak: null };
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let reflexao: { id: string; nota_pessoal: string | null; is_salvo_grimorio: boolean } | null = null;
+  let streak: { streak_atual: number; maior_streak: number; ultima_leitura_date: string | null } | null = null;
+
+  if (user) {
+    const { data: r } = await supabase
+      .from('reflexoes_diario')
+      .select('id, nota_pessoal, is_salvo_grimorio')
+      .eq('usuario_id', user.id)
+      .eq('verso_id', versoId)
+      .maybeSingle();
+    reflexao = r as typeof reflexao;
+
+    const { data: s } = await supabase
+      .from('perfis_diario_streak')
+      .select('streak_atual, maior_streak, ultima_leitura_date')
+      .eq('usuario_id', user.id)
+      .maybeSingle();
+    streak = s as typeof streak;
+  }
+
+  return { verso: verso as VersoDiario, reflexao, streak };
+}
+
+export async function removerDoGrimorio(versoId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: 'Usuário não autenticado' };
+  }
+
+  const { error } = await supabase
+    .from('reflexoes_diario')
+    .update({ is_salvo_grimorio: false, updated_at: new Date().toISOString() })
+    .eq('usuario_id', user.id)
+    .eq('verso_id', versoId);
+
+  if (error) {
+    console.error('[Grimorio] Erro ao remover do grimório:', error);
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath('/diario/grimorio');
+  revalidatePath('/diario');
+  return { success: true };
+}
+
 export async function salvarReflexao(
   versoId: string,
   notaPessoal: string,

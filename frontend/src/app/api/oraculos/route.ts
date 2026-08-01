@@ -20,9 +20,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (!GROQ_API_KEY) {
+      console.warn('[ORACULOS] GROQ_API_KEY/AI_API_KEY não configuradas no ambiente.');
       return NextResponse.json(
-        { error: 'Chave de API não configurada.' },
-        { status: 500 }
+        {
+          error: 'Serviço de Oráculos temporariamente indisponível.',
+          details: 'Configuração de variável de ambiente (GROQ_API_KEY) pendente no servidor.',
+        },
+        { status: 503 }
       );
     }
 

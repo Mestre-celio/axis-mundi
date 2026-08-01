@@ -44,6 +44,12 @@ export function Header() {
                   Diário
                 </Link>
                 <Link
+                  href="/diario/grimorio"
+                  className="text-sm text-[#D8B4F8] hover:text-white transition-colors"
+                >
+                  Grimório
+                </Link>
+                <Link
                   href="/dashboard"
                   className="flex items-center gap-2 text-sm text-gray-300 hover:text-[#E5C158]"
                 >
@@ -110,6 +116,9 @@ export function Header() {
             <>
               <Link href="/diario" className="block text-[#D8B4F8]" onClick={() => setMenuOpen(false)}>
                 Diário
+              </Link>
+              <Link href="/diario/grimorio" className="block text-[#D8B4F8]" onClick={() => setMenuOpen(false)}>
+                Grimório
               </Link>
               <button onClick={() => { signOut(); setMenuOpen(false); }} className="block text-gray-400">
                 Sair

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   salvarReflexao,
@@ -13,6 +14,22 @@ import {
   Sun,
   Feather,
 } from 'lucide-react';
+
+function dateKey(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dia = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dia}`;
+}
+
+function formatData(iso: string): string {
+  const [ano, mes, dia] = iso.split('-').map(Number);
+  return new Date(ano, mes - 1, dia).toLocaleDateString('pt-BR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
 
 const CHAKRA_LABELS: Record<string, string> = {
   raiz: 'Raiz',
@@ -33,6 +50,7 @@ const TEMPERAMENTO_LABELS: Record<string, string> = {
 
 interface VersoDiario {
   id: string;
+  data_publicacao: string;
   fonte_sabedoria: string;
   referencia: string;
   texto_verso: string;
@@ -55,6 +73,8 @@ export default function DiarioCard({ verso, reflexaoInicial, streakInicial }: Pr
   const [mensagem, setMensagem] = useState<{ ok: boolean; texto: string } | null>(null);
   const [streak, setStreak] = useState(streakInicial?.streak_atual || 0);
   const [maiorStreak, setMaiorStreak] = useState(streakInicial?.maior_streak || 0);
+
+  const eDeHoje = verso.data_publicacao === dateKey(new Date());
 
   useEffect(() => {
     let ativo = true;
@@ -91,24 +111,34 @@ export default function DiarioCard({ verso, reflexaoInicial, streakInicial }: Pr
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#D8B4F8]/40 bg-[#D8B4F8]/10 text-[#D8B4F8] text-sm mb-4">
               <Sun className="w-4 h-4" /> Diário Sagrado Matinal
             </div>
-            <div className="flex items-center justify-center gap-6 mb-6">
-              <div className="flex items-center gap-2 bg-slate-900/80 border border-[#E5C158]/30 rounded-full px-5 py-2">
-                <Flame className="w-5 h-5 text-[#E5C158]" fill="#E5C158" />
-                <div className="text-left">
-                  <p className="text-2xl font-bold leading-none text-[#E5C158]">{streak}</p>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider">Chama Sagrada</p>
+              <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+                <div className="flex items-center gap-2 bg-slate-900/80 border border-[#E5C158]/30 rounded-full px-5 py-2">
+                  <Flame className="w-5 h-5 text-[#E5C158]" fill="#E5C158" />
+                  <div className="text-left">
+                    <p className="text-2xl font-bold leading-none text-[#E5C158]">{streak}</p>
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wider">Chama Sagrada</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-2 bg-slate-900/80 border border-[#D8B4F8]/30 rounded-full px-5 py-2">
-                <Sparkles className="w-5 h-5 text-[#D8B4F8]" />
-                <div className="text-left">
-                  <p className="text-2xl font-bold leading-none text-[#D8B4F8]">{maiorStreak}</p>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider">Maior Chama</p>
+                <div className="flex items-center gap-2 bg-slate-900/80 border border-[#D8B4F8]/30 rounded-full px-5 py-2">
+                  <Sparkles className="w-5 h-5 text-[#D8B4F8]" />
+                  <div className="text-left">
+                    <p className="text-2xl font-bold leading-none text-[#D8B4F8]">{maiorStreak}</p>
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wider">Maior Chama</p>
+                  </div>
                 </div>
+                <Link
+                  href="/diario/grimorio"
+                  className="flex items-center gap-2 bg-slate-900/80 border border-[#D8B4F8]/30 rounded-full px-5 py-2 hover:border-[#D8B4F8] transition-colors"
+                >
+                  <BookOpen className="w-5 h-5 text-[#D8B4F8]" />
+                  <div className="text-left">
+                    <p className="text-sm font-bold leading-none text-[#D8B4F8]">Grimório</p>
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wider">Minha coleção</p>
+                  </div>
+                </Link>
               </div>
-            </div>
             <h1 className="text-3xl md:text-4xl font-serif text-[#E5D283]">
-              O Verso de Hoje
+              {eDeHoje ? 'O Verso de Hoje' : `Verso de ${formatData(verso.data_publicacao)}`}
             </h1>
           </header>
 
