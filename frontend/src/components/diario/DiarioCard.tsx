@@ -64,10 +64,11 @@ interface Props {
   verso: VersoDiario;
   reflexaoInicial: { nota_pessoal: string | null; is_salvo_grimorio: boolean } | null;
   streakInicial: { streak_atual: number; maior_streak: number } | null;
+  prefillInicial?: string;
 }
 
-export default function DiarioCard({ verso, reflexaoInicial, streakInicial }: Props) {
-  const [notaPessoal, setNotaPessoal] = useState(reflexaoInicial?.nota_pessoal || '');
+export default function DiarioCard({ verso, reflexaoInicial, streakInicial, prefillInicial }: Props) {
+  const [notaPessoal, setNotaPessoal] = useState(reflexaoInicial?.nota_pessoal || prefillInicial || '');
   const [isSalvoGrimorio, setIsSalvoGrimorio] = useState(Boolean(reflexaoInicial?.is_salvo_grimorio));
   const [salvando, setSalvando] = useState(false);
   const [mensagem, setMensagem] = useState<{ ok: boolean; texto: string } | null>(null);

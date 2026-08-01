@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default async function DiarioPage({
   searchParams,
 }: {
-  searchParams: { verso?: string };
+  searchParams: { verso?: string; citar?: string };
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -43,5 +43,17 @@ export default async function DiarioPage({
     );
   }
 
-  return <DiarioCard verso={verso} reflexaoInicial={reflexao} streakInicial={streak} />;
+  return (
+    <DiarioCard
+      verso={verso}
+      reflexaoInicial={reflexao}
+      streakInicial={streak}
+      prefillInicial={
+        searchParams.citar === '1' &&
+        !(reflexao as { nota_pessoal: string | null } | null)?.nota_pessoal
+          ? `Reflexão sobre ${verso.referencia} — "${verso.texto_verso}"`
+          : undefined
+      }
+    />
+  );
 }

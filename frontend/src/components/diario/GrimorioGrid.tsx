@@ -238,7 +238,7 @@ export default function GrimorioGrid({ itens }: Props) {
 
                   <div className="flex items-center justify-between gap-2 mt-auto pt-2 border-t border-slate-800">
                     <Link
-                      href={`/diario?verso=${item.verso.id}`}
+                      href={`/diario?verso=${item.verso.id}&citar=1`}
                       className="inline-flex items-center gap-2 text-sm text-[#D8B4F8] hover:text-white transition-colors font-semibold"
                     >
                       <Feather className="w-4 h-4" />
