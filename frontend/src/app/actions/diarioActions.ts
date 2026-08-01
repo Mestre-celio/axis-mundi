@@ -34,15 +34,20 @@ export async function getVersoHoje() {
 
   let versoFinal = (verso as VersoDiario) || null;
 
-  // Fallback: último verso publicado, caso ainda não haja o de hoje
+  // Fallback: rotação determinística pela data sobre toda a biblioteca,
+  // para o Diário nunca repetir eternamente o mesmo verso quando não há
+  // verso publicado para o dia.
   if (!versoFinal) {
-    const { data: ultimo } = await supabase
+    const { data: todos } = await supabase
       .from('versos_diarios')
       .select('*')
-      .order('data_publicacao', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    versoFinal = (ultimo as VersoDiario) || null;
+      .order('data_publicacao', { ascending: true });
+
+    if (todos && todos.length > 0) {
+      const diaNum = Math.floor(Date.parse(`${hojeKey}T00:00:00Z`) / 86400000);
+      const idx = ((diaNum % todos.length) + todos.length) % todos.length;
+      versoFinal = (todos[idx] as VersoDiario) || null;
+    }
   }
 
   if (!versoFinal) return { verso: null, reflexao: null, streak: null };
